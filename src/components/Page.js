@@ -14,8 +14,13 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
+import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
+import LinkIcon from "@mui/icons-material/Link";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -24,9 +29,19 @@ function Page(props) {
   const navigate = useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [addPlaylistMenuOpen, setAddPlaylistMenuOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const drawer = (
@@ -78,6 +93,49 @@ function Page(props) {
           <Typography variant="h6" noWrap component="div">
             {props.title}
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          {props.hasAddPlaylistMenu ? (
+            <>
+              <IconButton
+                size="large"
+                aria-label="add a playlist"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <PlaylistAddTwoToneIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem>
+                  <ListItemIcon>
+                    <PlaylistAddTwoToneIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Add from remote URL</ListItemText>
+                </MenuItem>
+                <MenuItem>
+                  <ListItemIcon>
+                    <PhoneAndroidIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Add file from device</ListItemText>
+                </MenuItem>
+              </Menu>
+            </>
+          ) : null}
         </Toolbar>
       </AppBar>
       <Box
