@@ -1,5 +1,7 @@
 import * as React from "react";
 import PropTypes from "prop-types";
+
+// Components
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,16 +13,26 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+
+// Icons
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
 import LinkIcon from "@mui/icons-material/Link";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+
+// Hooks
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -29,8 +41,10 @@ function Page(props) {
   const navigate = useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [addPlaylistMenuOpen, setAddPlaylistMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [remotePlaylistDialogOpen, setRemotePlaylistDialogOpen] =
+    React.useState(false);
+  const [remotePlaylistUrl, setRemotePlaylistUrl] = React.useState(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -39,9 +53,23 @@ function Page(props) {
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const handleClose = () => {
+  const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleRemotePlaylistDialogOpen = () => {
+    setAnchorEl(null);
+    setRemotePlaylistDialogOpen(true);
+  };
+  const handlePlaylistUrlChange = (event) => {
+    setRemotePlaylistUrl(event.target.value);
+  };
+  const handleAddRemotePlaylistCancel = () => {
+    setRemotePlaylistDialogOpen(false);
+  };
+  const handleAddRemotePlaylistTrigger = () => {
+    setRemotePlaylistDialogOpen(false);
+    console.log(remotePlaylistUrl);
   };
 
   const drawer = (
@@ -119,21 +147,46 @@ function Page(props) {
                   horizontal: "right",
                 }}
                 open={Boolean(anchorEl)}
-                onClose={handleClose}
+                onClose={handleMenuClose}
               >
-                <MenuItem>
+                <MenuItem onClick={handleRemotePlaylistDialogOpen}>
                   <ListItemIcon>
-                    <PlaylistAddTwoToneIcon fontSize="small" />
+                    <LinkIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Add from remote URL</ListItemText>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem disabled>
                   <ListItemIcon>
                     <PhoneAndroidIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Add file from device</ListItemText>
                 </MenuItem>
               </Menu>
+              <Dialog
+                open={remotePlaylistDialogOpen}
+                onClose={handleAddRemotePlaylistCancel}
+              >
+                <DialogTitle>Add a playlist from remote URL</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    name="url"
+                    autoComplete="off"
+                    label="Playlist URL"
+                    type="url"
+                    fullWidth
+                    variant="standard"
+                    onChange={handlePlaylistUrlChange}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleAddRemotePlaylistCancel}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleAddRemotePlaylistTrigger}>Ok</Button>
+                </DialogActions>
+              </Dialog>
             </>
           ) : null}
         </Toolbar>
