@@ -1,5 +1,6 @@
 import { useState } from "react";
 // Components
+import Page from "./components/Page";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,8 +16,15 @@ import DialogTitle from "@mui/material/DialogTitle";
 import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
 import LinkIcon from "@mui/icons-material/Link";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+// Others
+import parser from "iptv-playlist-parser";
+import Dexie from "dexie";
 
-import Page from "./components/Page";
+// Create playlist store
+const db = new Dexie("IPTV");
+db.version(1).stores({
+  playlists: "++id,&name,data",
+});
 
 export default function Playlists() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -43,11 +51,34 @@ export default function Playlists() {
   };
   const handleAddRemotePlaylistTrigger = () => {
     setRemotePlaylistDialogOpen(false);
+    const playlistName = remotePlaylistUrl.split("/").pop();
 
     fetch(remotePlaylistUrl)
       .then((res) => res.text())
       .then((rawPlaylist) => {
-        console.log("rawPlaylist", rawPlaylist);
+        // Convert IPTV playlist to JavaScript array of objects
+        const playlistData = parser.parse(rawPlaylist).items;
+
+        // If a valid IPTV playlist
+        if (playlistData.length > 0) {
+          db.playlists
+            .where("name")
+            .equalsIgnoreCase(playlistName)
+            .count()
+            .then((count) => {
+              // If this playlist doesn't exist in the database
+              if (count === 0) {
+                db.playlists.add({ name: playlistName, data: playlistData });
+                console.log(`${playlistName} playlist created`);
+              } else {
+                // If this playlist already exists in the database
+                console.log(`${playlistName} playlist already exists`);
+              }
+            });
+        } else {
+          // If not a valid IPTV playlist
+          console.log("This is not an IPTV playlist url");
+        }
       })
       .catch((error) => {
         !navigator.onLine &&
