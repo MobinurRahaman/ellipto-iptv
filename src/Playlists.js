@@ -33,10 +33,10 @@ db.version(1).stores({
 });
 
 export default function Playlists() {
-  // Add playlist menu states
+  // Add playlist menu state
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
-  // Add remote playlist dialog open
-  const [addRemotePlaylistDialogOpen, setRemotePlaylistDialogOpen] =
+  // Add remote playlist states
+  const [addRemotePlaylistDialogOpen, setAddRemotePlaylistDialogOpen] =
     useState(false);
   const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
   // Playlist names state
@@ -45,6 +45,11 @@ export default function Playlists() {
   const [playlistContextMenuAnchorEl, setPlaylistContextMenuAnchorEl] =
     useState(null);
   const [playlistTargetIndex, setPlaylistTargetIndex] = useState(null);
+  // Rename playlist states
+  const [renamePlaylistDialogOpen, setRenamePlaylistDialogOpen] =
+    useState(false);
+  const [renamedPlaylistName, setRenamedPlaylistName] = useState(null);
+  // Delete playlist state
   const [deletePlaylistDialogOpen, setDeletePlaylistDialogOpen] =
     useState(false);
 
@@ -56,29 +61,19 @@ export default function Playlists() {
     setAddPlaylistMenuAnchorEl(null);
   };
 
-  // Playlist context menu functions
-  const handlePlaylistContextMenuOpen = (event, index) => {
-    setPlaylistContextMenuAnchorEl(event.currentTarget);
-    setPlaylistTargetIndex(index);
-  };
-  const handlePlaylistContextMenuClose = () => {
-    setPlaylistContextMenuAnchorEl(null);
-    setPlaylistTargetIndex(null);
-  };
-
   // Remote playlist url dialog functions
   const handleRemotePlaylistDialogOpen = () => {
     setAddPlaylistMenuAnchorEl(null);
-    setRemotePlaylistDialogOpen(true);
+    setAddRemotePlaylistDialogOpen(true);
   };
   const handlePlaylistUrlChange = (event) => {
     setRemotePlaylistUrl(event.target.value);
   };
   const handleAddRemotePlaylistCancel = () => {
-    setRemotePlaylistDialogOpen(false);
+    setAddRemotePlaylistDialogOpen(false);
   };
   const handleAddRemotePlaylistTrigger = () => {
-    setRemotePlaylistDialogOpen(false);
+    setAddRemotePlaylistDialogOpen(false);
     const playlistName = remotePlaylistUrl.split("/").pop();
 
     fetch(remotePlaylistUrl)
@@ -115,18 +110,49 @@ export default function Playlists() {
       });
   };
 
+  // Playlist context menu functions
+  const handlePlaylistContextMenuOpen = (event, index) => {
+    setPlaylistContextMenuAnchorEl(event.currentTarget);
+    setPlaylistTargetIndex(index);
+  };
+  const handlePlaylistContextMenuClose = () => {
+    setPlaylistContextMenuAnchorEl(null);
+    setPlaylistTargetIndex(null);
+  };
+
+  // Rename playlist dialog functions
+  const handleRenamePlaylistDialogOpen = () => {
+    setPlaylistContextMenuAnchorEl(null);
+    setRenamePlaylistDialogOpen(true);
+  };
+  const handlePlaylistNameChange = (event) => {
+    setRenamedPlaylistName(event.target.value);
+  };
+  const handleRenamePlaylistCancel = () => {
+    setRenamePlaylistDialogOpen(false);
+  };
+  const handleRenamePlaylistTrigger = async () => {
+    setRenamePlaylistDialogOpen(false);
+    await db.playlists
+      .where("name")
+      .equals(playlistNames[playlistTargetIndex])
+      .modify({ name: renamedPlaylistName });
+  };
+
   // Delete playlist dialog functions
   const handleDeletePlaylistDialogOpen = () => {
+    setPlaylistContextMenuAnchorEl(null);
     setDeletePlaylistDialogOpen(true);
   };
   const handleDeletePlaylistCancel = () => {
-    setPlaylistContextMenuAnchorEl(null);
     setDeletePlaylistDialogOpen(false);
   };
-  const handleDeletePlaylistTrigger = async (playlistName) => {
-    setPlaylistContextMenuAnchorEl(null);
+  const handleDeletePlaylistTrigger = async () => {
     setDeletePlaylistDialogOpen(false);
-    await db.playlists.where("name").equals(playlistName).delete();
+    await db.playlists
+      .where("name")
+      .equals(playlistNames[playlistTargetIndex])
+      .delete();
   };
 
   // Get playlist names from database
@@ -218,7 +244,7 @@ export default function Playlists() {
         open={Boolean(playlistContextMenuAnchorEl)}
         onClose={handlePlaylistContextMenuClose}
       >
-        <MenuItem disabled>
+        <MenuItem onClick={handleRenamePlaylistDialogOpen}>
           <ListItemIcon>
             <DriveFileRenameOutlineIcon fontSize="small" />
           </ListItemIcon>
@@ -260,6 +286,37 @@ export default function Playlists() {
         </DialogActions>
       </Dialog>
       <Dialog
+        open={renamePlaylistDialogOpen}
+        onClose={handleRenamePlaylistDialogOpen}
+      >
+        <DialogTitle>
+          Rename {playlistNames[playlistTargetIndex]} playlist
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="name"
+            autoComplete="off"
+            label="New playlist name"
+            type="text"
+            fullWidth
+            variant="standard"
+            inputProps={{ maxLength: 256 }}
+            onChange={handlePlaylistNameChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRenamePlaylistCancel}>Cancel</Button>
+          <Button
+            disabled={renamedPlaylistName?.length > 0 ? false : true}
+            onClick={handleRenamePlaylistTrigger}
+          >
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
         open={deletePlaylistDialogOpen}
         onClose={handleDeletePlaylistCancel}
         aria-labelledby="delete-playlist-dialog-title"
@@ -270,13 +327,7 @@ export default function Playlists() {
         </DialogTitle>
         <DialogActions>
           <Button onClick={handleDeletePlaylistCancel}>Cancel</Button>
-          <Button
-            color="error"
-            onClick={() =>
-              handleDeletePlaylistTrigger(playlistNames[playlistTargetIndex])
-            }
-            autoFocus
-          >
+          <Button color="error" onClick={handleDeletePlaylistTrigger} autoFocus>
             Delete
           </Button>
         </DialogActions>
