@@ -26,41 +26,47 @@ import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 
-// Create playlist store
+// Create database and playlist store/collection
 const db = new Dexie("IPTV");
 db.version(1).stores({
   playlists: "++id,&name,data",
 });
 
 export default function Playlists() {
+  // Add playlist menu states
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
-  const [playlistContextMenuAnchorEl, setPlaylistContextMenuAnchorEl] =
-    useState(null);
-  const [remotePlaylistDialogOpen, setRemotePlaylistDialogOpen] =
+  // Add remote playlist dialog open
+  const [addRemotePlaylistDialogOpen, setRemotePlaylistDialogOpen] =
     useState(false);
   const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
+  // Playlist names state
   const [playlistNames, setPlaylistNames] = useState([]);
+  // Playlist context menu states
+  const [playlistContextMenuAnchorEl, setPlaylistContextMenuAnchorEl] =
+    useState(null);
+  const [playlistTargetIndex, setPlaylistTargetIndex] = useState(null);
+  const [deletePlaylistDialogOpen, setDeletePlaylistDialogOpen] =
+    useState(false);
 
-  const handleAddPlaylistMenu = (event) => {
+  // Add playlist menu functions
+  const handleAddPlaylistMenuOpen = (event) => {
     setAddPlaylistMenuAnchorEl(event.currentTarget);
   };
   const handleAddPlaylistMenuClose = () => {
     setAddPlaylistMenuAnchorEl(null);
   };
 
-  const handlePlaylistContextMenu = (event) => {
+  // Playlist context menu functions
+  const handlePlaylistContextMenuOpen = (event, index) => {
     setPlaylistContextMenuAnchorEl(event.currentTarget);
+    setPlaylistTargetIndex(index);
   };
   const handlePlaylistContextMenuClose = () => {
     setPlaylistContextMenuAnchorEl(null);
+    setPlaylistTargetIndex(null);
   };
 
-  useLiveQuery(() => {
-    db.playlists.orderBy("name").keys((keys) => {
-      setPlaylistNames(keys);
-    });
-  }, []);
-
+  // Remote playlist url dialog functions
   const handleRemotePlaylistDialogOpen = () => {
     setAddPlaylistMenuAnchorEl(null);
     setRemotePlaylistDialogOpen(true);
@@ -94,21 +100,43 @@ export default function Playlists() {
                 console.log(`${playlistName} playlist created`);
               } else {
                 // If this playlist already exists in the database
-                console.log(`${playlistName} playlist already exists`);
+                alert(`${playlistName} playlist already exists`);
               }
             });
         } else {
           // If not a valid IPTV playlist
-          console.log("This is not an IPTV playlist url");
+          alert("This is not an IPTV playlist url");
         }
       })
       .catch((error) => {
-        !navigator.onLine &&
-          console.log("No internet. Turn on internet connection");
+        !navigator.onLine && alert("No internet. Turn on internet connection");
+        alert("Error");
         console.log("error", error);
       });
   };
 
+  // Delete playlist dialog functions
+  const handleDeletePlaylistDialogOpen = () => {
+    setDeletePlaylistDialogOpen(true);
+  };
+  const handleDeletePlaylistCancel = () => {
+    setPlaylistContextMenuAnchorEl(null);
+    setDeletePlaylistDialogOpen(false);
+  };
+  const handleDeletePlaylistTrigger = async (playlistName) => {
+    setPlaylistContextMenuAnchorEl(null);
+    setDeletePlaylistDialogOpen(false);
+    await db.playlists.where("name").equals(playlistName).delete();
+  };
+
+  // Get playlist names from database
+  useLiveQuery(() => {
+    db.playlists.orderBy("name").keys((keys) => {
+      setPlaylistNames(keys);
+    });
+  }, []);
+
+  // Create add to playlist menu to share to <Page/> component as a prop
   const menu = (
     <>
       <IconButton
@@ -117,7 +145,7 @@ export default function Playlists() {
         aria-label="add a playlist"
         aria-controls="add-playlist-menu"
         aria-haspopup="true"
-        onClick={handleAddPlaylistMenu}
+        onClick={handleAddPlaylistMenuOpen}
         color="inherit"
       >
         <PlaylistAddTwoToneIcon />
@@ -147,7 +175,7 @@ export default function Playlists() {
           <ListItemIcon>
             <PhoneAndroidIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Add playlist file from device</ListItemText>
+          <ListItemText>Add playlist from device</ListItemText>
         </MenuItem>
       </Menu>
     </>
@@ -156,22 +184,22 @@ export default function Playlists() {
   return (
     <Page title="Playlists" menu={menu}>
       <List>
-        {playlistNames?.map((item, index) => (
+        {playlistNames?.map((playlistName, index) => (
           <ListItem
             key={index}
             secondaryAction={
               <IconButton
                 edge="end"
-                aria-label={`show context menu for ${item} playlist`}
+                aria-label={`show context menu for ${playlistName} playlist`}
                 aria-controls="playlist-context-menu"
                 aria-haspopup="true"
-                onClick={handlePlaylistContextMenu}
+                onClick={(event) => handlePlaylistContextMenuOpen(event, index)}
               >
                 <MoreVertIcon />
               </IconButton>
             }
           >
-            <ListItemText primary={item} />
+            <ListItemText primary={playlistName} />
           </ListItem>
         ))}
       </List>
@@ -196,7 +224,7 @@ export default function Playlists() {
           </ListItemIcon>
           <ListItemText>Rename</ListItemText>
         </MenuItem>
-        <MenuItem disabled>
+        <MenuItem onClick={handleDeletePlaylistDialogOpen}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
@@ -204,7 +232,7 @@ export default function Playlists() {
         </MenuItem>
       </Menu>
       <Dialog
-        open={remotePlaylistDialogOpen}
+        open={addRemotePlaylistDialogOpen}
         onClose={handleAddRemotePlaylistCancel}
       >
         <DialogTitle>Add a playlist from remote URL</DialogTitle>
@@ -228,6 +256,28 @@ export default function Playlists() {
             onClick={handleAddRemotePlaylistTrigger}
           >
             Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deletePlaylistDialogOpen}
+        onClose={handleDeletePlaylistCancel}
+        aria-labelledby="delete-playlist-dialog-title"
+        aria-describedby="delete-playlist-dialog-description"
+      >
+        <DialogTitle id="delete-playlist-dialog-title">
+          Are you sure to delete {playlistNames[playlistTargetIndex]} playlist?
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleDeletePlaylistCancel}>Cancel</Button>
+          <Button
+            color="error"
+            onClick={() =>
+              handleDeletePlaylistTrigger(playlistNames[playlistTargetIndex])
+            }
+            autoFocus
+          >
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
