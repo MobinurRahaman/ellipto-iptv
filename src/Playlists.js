@@ -19,6 +19,8 @@ import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
 import LinkIcon from "@mui/icons-material/Link";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 // Others
 import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
@@ -31,17 +33,26 @@ db.version(1).stores({
 });
 
 export default function Playlists() {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
+  const [playlistContextMenuAnchorEl, setPlaylistContextMenuAnchorEl] =
+    useState(null);
   const [remotePlaylistDialogOpen, setRemotePlaylistDialogOpen] =
     useState(false);
   const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
   const [playlistNames, setPlaylistNames] = useState([]);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleAddPlaylistMenu = (event) => {
+    setAddPlaylistMenuAnchorEl(event.currentTarget);
   };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleAddPlaylistMenuClose = () => {
+    setAddPlaylistMenuAnchorEl(null);
+  };
+
+  const handlePlaylistContextMenu = (event) => {
+    setPlaylistContextMenuAnchorEl(event.currentTarget);
+  };
+  const handlePlaylistContextMenuClose = () => {
+    setPlaylistContextMenuAnchorEl(null);
   };
 
   useLiveQuery(() => {
@@ -51,7 +62,7 @@ export default function Playlists() {
   }, []);
 
   const handleRemotePlaylistDialogOpen = () => {
-    setAnchorEl(null);
+    setAddPlaylistMenuAnchorEl(null);
     setRemotePlaylistDialogOpen(true);
   };
   const handlePlaylistUrlChange = (event) => {
@@ -104,16 +115,16 @@ export default function Playlists() {
         edge="end"
         size="large"
         aria-label="add a playlist"
-        aria-controls="menu-appbar"
+        aria-controls="add-playlist-menu"
         aria-haspopup="true"
-        onClick={handleMenu}
+        onClick={handleAddPlaylistMenu}
         color="inherit"
       >
         <PlaylistAddTwoToneIcon />
       </IconButton>
       <Menu
-        id="menu-appbar"
-        anchorEl={anchorEl}
+        id="add-playlist-menu"
+        anchorEl={addPlaylistMenuAnchorEl}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -123,8 +134,8 @@ export default function Playlists() {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        open={Boolean(addPlaylistMenuAnchorEl)}
+        onClose={handleAddPlaylistMenuClose}
       >
         <MenuItem onClick={handleRemotePlaylistDialogOpen}>
           <ListItemIcon>
@@ -152,6 +163,9 @@ export default function Playlists() {
               <IconButton
                 edge="end"
                 aria-label={`show context menu for ${item} playlist`}
+                aria-controls="playlist-context-menu"
+                aria-haspopup="true"
+                onClick={handlePlaylistContextMenu}
               >
                 <MoreVertIcon />
               </IconButton>
@@ -161,6 +175,34 @@ export default function Playlists() {
           </ListItem>
         ))}
       </List>
+      <Menu
+        id="playlist-context-menu"
+        anchorEl={playlistContextMenuAnchorEl}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(playlistContextMenuAnchorEl)}
+        onClose={handlePlaylistContextMenuClose}
+      >
+        <MenuItem disabled>
+          <ListItemIcon>
+            <DriveFileRenameOutlineIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Rename</ListItemText>
+        </MenuItem>
+        <MenuItem disabled>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
       <Dialog
         open={remotePlaylistDialogOpen}
         onClose={handleAddRemotePlaylistCancel}
@@ -181,7 +223,12 @@ export default function Playlists() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleAddRemotePlaylistCancel}>Cancel</Button>
-          <Button onClick={handleAddRemotePlaylistTrigger}>Ok</Button>
+          <Button
+            disabled={remotePlaylistUrl?.length > 0 ? false : true}
+            onClick={handleAddRemotePlaylistTrigger}
+          >
+            Ok
+          </Button>
         </DialogActions>
       </Dialog>
     </Page>
