@@ -5,6 +5,8 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -16,9 +18,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
 import LinkIcon from "@mui/icons-material/Link";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 // Others
 import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
+import { useLiveQuery } from "dexie-react-hooks";
 
 // Create playlist store
 const db = new Dexie("IPTV");
@@ -31,6 +35,7 @@ export default function Playlists() {
   const [remotePlaylistDialogOpen, setRemotePlaylistDialogOpen] =
     useState(false);
   const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
+  const [playlistNames, setPlaylistNames] = useState([]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -38,6 +43,12 @@ export default function Playlists() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  useLiveQuery(() => {
+    db.playlists.orderBy("name").keys((keys) => {
+      setPlaylistNames(keys);
+    });
+  }, []);
 
   const handleRemotePlaylistDialogOpen = () => {
     setAnchorEl(null);
@@ -90,6 +101,7 @@ export default function Playlists() {
   const menu = (
     <>
       <IconButton
+        edge="end"
         size="large"
         aria-label="add a playlist"
         aria-controls="menu-appbar"
@@ -132,6 +144,23 @@ export default function Playlists() {
 
   return (
     <Page title="Playlists" menu={menu}>
+      <List>
+        {playlistNames?.map((item, index) => (
+          <ListItem
+            key={index}
+            secondaryAction={
+              <IconButton
+                edge="end"
+                aria-label={`show context menu for ${item} playlist`}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            }
+          >
+            <ListItemText primary={item} />
+          </ListItem>
+        ))}
+      </List>
       <Menu
         id="menu-appbar"
         anchorEl={anchorEl}
