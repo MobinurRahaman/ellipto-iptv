@@ -112,6 +112,7 @@ export default function Playlists() {
 
   // Playlist context menu functions
   const handlePlaylistContextMenuOpen = (event, index) => {
+    event.stopPropagation();
     setPlaylistContextMenuAnchorEl(event.currentTarget);
     setPlaylistTargetIndex(index);
   };
@@ -212,6 +213,7 @@ export default function Playlists() {
       <List>
         {playlistNames?.map((playlistName, index) => (
           <ListItem
+            button
             key={index}
             secondaryAction={
               <IconButton
