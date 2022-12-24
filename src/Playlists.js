@@ -24,7 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 // Others
 import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
-import { useLiveQuery } from "dexie-react-hooks";
+import { useLivePlaylistNames } from "./hooks/dbhooks";
 
 // Create database and playlist store/collection
 const db = new Dexie("IPTV");
@@ -33,14 +33,14 @@ db.version(1).stores({
 });
 
 export default function Playlists() {
+  // Get playlist names from custom hook
+  const playlistNames = useLivePlaylistNames();
   // Add playlist menu state
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
   // Add remote playlist states
   const [addRemotePlaylistDialogOpen, setAddRemotePlaylistDialogOpen] =
     useState(false);
   const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
-  // Playlist names state
-  const [playlistNames, setPlaylistNames] = useState([]);
   // Playlist context menu states
   const [playlistContextMenuAnchorEl, setPlaylistContextMenuAnchorEl] =
     useState(null);
@@ -138,6 +138,13 @@ export default function Playlists() {
       .where("name")
       .equals(playlistNames[playlistTargetIndex])
       .modify({ name: renamedPlaylistName });
+    if (
+      playlistNames[playlistTargetIndex] ===
+      localStorage.getItem("selectedPlaylistName")
+    ) {
+      localStorage.setItem("selectedPlaylistName", renamedPlaylistName);
+      // alert(playlistNames[playlistTargetIndex] + " === " + renamedPlaylistName);
+    }
   };
 
   // Delete playlist dialog functions
@@ -157,11 +164,11 @@ export default function Playlists() {
   };
 
   // Get playlist names from database
-  useLiveQuery(() => {
-    db.playlists.orderBy("name").keys((keys) => {
-      setPlaylistNames(keys);
-    });
-  }, []);
+  // useLiveQuery(() => {
+  //   db.playlists.orderBy("name").keys((keys) => {
+  //     setPlaylistNames(keys);
+  //   });
+  // }, []);
 
   // Create add to playlist menu to share to <Page/> component as a prop
   const menu = (

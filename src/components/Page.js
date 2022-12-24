@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 // Components
 import AppBar from "@mui/material/AppBar";
@@ -13,30 +13,58 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
+import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
+import SettingsIcon from "@mui/icons-material/Settings";
+import EditIcon from "@mui/icons-material/Edit";
 // Hooks
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useLivePlaylistNames } from "../hooks/dbhooks";
 
 const drawerWidth = 240;
 
 function Page(props) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { window, menu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Playlist in drawer state
+  const [selectedPlaylistIndex, setSelectedPlaylistIndex] = useState(null);
+  const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  // Get playlist names from custom hook
+  const playlistNames = useLivePlaylistNames();
+
+  useEffect(() => {
+    localStorage.getItem("selectedPlaylistName") !== null &&
+      setSelectedPlaylistName(localStorage.getItem("selectedPlaylistName"));
+  }, []);
+
+  useEffect(() => {
+    if (selectedPlaylistName) {
+      localStorage.setItem("selectedPlaylistName", selectedPlaylistName);
+    }
+  }, [selectedPlaylistName]);
+
   const drawer = (
     <div>
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => navigate("/")}>
+          <ListItemButton
+            onClick={() => {
+              handleDrawerToggle();
+              pathname !== "/" && navigate("/");
+            }}
+          >
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
@@ -44,13 +72,61 @@ function Page(props) {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => navigate("/playlists")}>
+          <ListItemButton
+            onClick={() => {
+              handleDrawerToggle();
+              pathname !== "/settings" && navigate("/settings");
+            }}
+          >
             <ListItemIcon>
-              <PlaylistPlayIcon />
+              <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary="Playlists" />
+            <ListItemText primary="Settings" />
           </ListItemButton>
         </ListItem>
+      </List>
+      <Divider />
+      <Box
+        sx={{
+          mx: (theme) => theme.spacing(1),
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography variant="overline">Playlists</Typography>
+        <Button
+          size="small"
+          startIcon={<EditIcon />}
+          onClick={() => {
+            handleDrawerToggle();
+            pathname !== "/playlists" && navigate("/playlists");
+          }}
+        >
+          Manage
+        </Button>
+      </Box>
+      <List>
+        {playlistNames?.map((playlistName, playlistIndex) => (
+          <ListItem disablePadding key={playlistIndex}>
+            <ListItemButton
+              selected={
+                pathname === "/" &&
+                playlistName === localStorage.getItem("selectedPlaylistName")
+              }
+              onClick={() => {
+                handleDrawerToggle();
+                setSelectedPlaylistName(playlistName);
+                localStorage.setItem("selectedPlaylistName", playlistName);
+                pathname !== "/" && navigate("/");
+              }}
+            >
+              <ListItemIcon>
+                <PlaylistPlayIcon />
+              </ListItemIcon>
+              <ListItemText primary={playlistName} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
     </div>
   );
@@ -79,7 +155,9 @@ function Page(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {props.title}
+            {pathname === "/" && selectedPlaylistName
+              ? selectedPlaylistName
+              : props.title}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           {menu}
@@ -127,7 +205,6 @@ function Page(props) {
         component="main"
         sx={{
           flexGrow: 1,
-          // p: 3,
           width: { lg: `calc(100% - ${drawerWidth}px)` },
         }}
       >
