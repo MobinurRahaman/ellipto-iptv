@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router";
 
 import Home from "./Home";
 import Playlists from "./Playlists";
+import LiveTv from "./LiveTv";
 import PageNotFound from "./PageNotFound";
 
 export const GlobalContext = createContext();
@@ -40,6 +41,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/playlists" element={<Playlists />} />
+          <Route path="/live-tv/:channelId" element={<LiveTv />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>

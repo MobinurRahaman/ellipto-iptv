@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import ButtonBase from "@mui/material/ButtonBase";
 import Box from "@mui/material/Box";
@@ -36,6 +37,7 @@ db.version(1).stores({
 });
 
 export default function Home() {
+  const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(1);
   const [totalPlaylistDataLen, setTotalPlaylistDataLen] = useState(0);
   const [playlistData, setPlaylistData] = useState([]);
@@ -95,6 +97,7 @@ export default function Home() {
 
   const handleChannelClick = (channelObj) => {
     setCurrentChannelData(channelObj);
+    navigate(`/live-tv/${channelObj.data.tvg.id}`);
   };
 
   return (
