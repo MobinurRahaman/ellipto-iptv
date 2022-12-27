@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 // Components
 import Page from "./components/Page";
 import IconButton from "@mui/material/IconButton";
@@ -25,6 +25,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
 import { useLivePlaylistNames } from "./hooks/dbhooks";
+import { GlobalContext } from "./App";
 
 // Create database and playlist store/collection
 const db = new Dexie("IPTV");
@@ -35,6 +36,7 @@ db.version(1).stores({
 export default function Playlists() {
   // Get playlist names from custom hook
   const playlistNames = useLivePlaylistNames();
+  // _ States
   // Add playlist menu state
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
   // Add remote playlist states
@@ -48,11 +50,16 @@ export default function Playlists() {
   // Rename playlist states
   const [renamePlaylistDialogOpen, setRenamePlaylistDialogOpen] =
     useState(false);
-  const [renamedPlaylistName, setRenamedPlaylistName] = useState(null);
+  const [renamedPlaylistName, setRenamedPlaylistName] = useState("");
   // Delete playlist state
   const [deletePlaylistDialogOpen, setDeletePlaylistDialogOpen] =
     useState(false);
 
+  // __ Context
+  const { selectedPlaylistName, setSelectedPlaylistName } =
+    useContext(GlobalContext);
+
+  // __ Functions
   // Add playlist menu functions
   const handleAddPlaylistMenuOpen = (event) => {
     setAddPlaylistMenuAnchorEl(event.currentTarget);
@@ -71,6 +78,7 @@ export default function Playlists() {
   };
   const handleAddRemotePlaylistCancel = () => {
     setAddRemotePlaylistDialogOpen(false);
+    setRemotePlaylistUrl("");
   };
   const handleAddRemotePlaylistTrigger = () => {
     setAddRemotePlaylistDialogOpen(false);
@@ -92,6 +100,8 @@ export default function Playlists() {
               // If this playlist doesn't exist in the database
               if (count === 0) {
                 db.playlists.add({ name: playlistName, data: playlistData });
+                // If the first playlist is added, then make it selected by default
+                setSelectedPlaylistName(playlistName);
                 console.log(`${playlistName} playlist created`);
               } else {
                 // If this playlist already exists in the database
@@ -108,6 +118,8 @@ export default function Playlists() {
         alert("Error");
         console.log("error", error);
       });
+    // Empty remote playlist url
+    setRemotePlaylistUrl("");
   };
 
   // Playlist context menu functions
@@ -131,6 +143,7 @@ export default function Playlists() {
   };
   const handleRenamePlaylistCancel = () => {
     setRenamePlaylistDialogOpen(false);
+    setRenamedPlaylistName("");
   };
   const handleRenamePlaylistTrigger = async () => {
     setRenamePlaylistDialogOpen(false);
@@ -138,12 +151,11 @@ export default function Playlists() {
       .where("name")
       .equals(playlistNames[playlistTargetIndex])
       .modify({ name: renamedPlaylistName });
-    if (
-      playlistNames[playlistTargetIndex] ===
-      localStorage.getItem("selectedPlaylistName")
-    ) {
-      localStorage.setItem("selectedPlaylistName", renamedPlaylistName);
-      // alert(playlistNames[playlistTargetIndex] + " === " + renamedPlaylistName);
+    // Empty renamed playlist name
+    setRenamedPlaylistName("");
+    // If current selected playlist name is changed, then update the state of selectedPlaylistName
+    if (playlistNames[playlistTargetIndex] === selectedPlaylistName) {
+      setSelectedPlaylistName(renamedPlaylistName);
     }
   };
 
@@ -162,13 +174,6 @@ export default function Playlists() {
       .equals(playlistNames[playlistTargetIndex])
       .delete();
   };
-
-  // Get playlist names from database
-  // useLiveQuery(() => {
-  //   db.playlists.orderBy("name").keys((keys) => {
-  //     setPlaylistNames(keys);
-  //   });
-  // }, []);
 
   // Create add to playlist menu to share to <Page/> component as a prop
   const menu = (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import PropTypes from "prop-types";
 // Components
 import AppBar from "@mui/material/AppBar";
@@ -25,35 +25,24 @@ import EditIcon from "@mui/icons-material/Edit";
 // Hooks
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLivePlaylistNames } from "../hooks/dbhooks";
+import { GlobalContext } from "../App";
 
 const drawerWidth = 240;
 
 function Page(props) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  // Get playlist names from custom hook
+  const playlistNames = useLivePlaylistNames();
   const { window, menu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Playlist in drawer state
-  const [selectedPlaylistIndex, setSelectedPlaylistIndex] = useState(null);
-  const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
+  // Context
+  const { selectedPlaylistName, setSelectedPlaylistName } =
+    useContext(GlobalContext);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  // Get playlist names from custom hook
-  const playlistNames = useLivePlaylistNames();
-
-  useEffect(() => {
-    localStorage.getItem("selectedPlaylistName") !== null &&
-      setSelectedPlaylistName(localStorage.getItem("selectedPlaylistName"));
-  }, []);
-
-  useEffect(() => {
-    if (selectedPlaylistName) {
-      localStorage.setItem("selectedPlaylistName", selectedPlaylistName);
-    }
-  }, [selectedPlaylistName]);
 
   const drawer = (
     <div>
