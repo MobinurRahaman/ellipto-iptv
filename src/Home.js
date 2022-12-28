@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import ButtonBase from "@mui/material/ButtonBase";
@@ -90,6 +90,17 @@ export default function Home() {
         });
     });
   }, [pageNum]);
+
+  useEffect(() => {
+    scrollToTop();
+  }, [selectedPlaylistName]);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
 
   const fetchMoreData = () => {
     setPageNum((prevPageNum) => prevPageNum + 1);
