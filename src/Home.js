@@ -47,6 +47,32 @@ export default function Home() {
   const perPage = 30;
 
   useLiveQuery(() => {
+    if (pageNum > 1) {
+      db.open().then(() => {
+        db.playlists
+          .where("name")
+          .equals(selectedPlaylistName)
+          .toArray()
+          .then((result) => {
+            setTotalPlaylistDataLen(result[0].data.length);
+            setPlaylistData(
+              Array.from(
+                new Set([
+                  ...playlistData,
+                  ...result[0].data.slice(
+                    Math.max(0, (pageNum - 1) * perPage),
+                    pageNum * perPage
+                  ),
+                ])
+              )
+            );
+          });
+      });
+    }
+  }, [pageNum]);
+
+  useLiveQuery(() => {
+    setPageNum(1);
     db.open().then(() => {
       db.playlists
         .where("name")
@@ -58,8 +84,8 @@ export default function Home() {
             Array.from(
               new Set([
                 ...result[0].data.slice(
-                  Math.max(0, (pageNum - 1) * perPage),
-                  pageNum * perPage
+                  Math.max(0, (1 - 1) * perPage),
+                  1 * perPage
                 ),
               ])
             )
@@ -67,29 +93,6 @@ export default function Home() {
         });
     });
   }, [selectedPlaylistName]);
-
-  useLiveQuery(() => {
-    db.open().then(() => {
-      db.playlists
-        .where("name")
-        .equals(selectedPlaylistName)
-        .toArray()
-        .then((result) => {
-          setTotalPlaylistDataLen(result[0].data.length);
-          setPlaylistData(
-            Array.from(
-              new Set([
-                ...playlistData,
-                ...result[0].data.slice(
-                  Math.max(0, (pageNum - 1) * perPage),
-                  pageNum * perPage
-                ),
-              ])
-            )
-          );
-        });
-    });
-  }, [pageNum]);
 
   useEffect(() => {
     scrollToTop();
@@ -98,7 +101,7 @@ export default function Home() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   };
 
