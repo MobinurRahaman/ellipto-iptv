@@ -195,6 +195,7 @@ function Page(props) {
         sx={{
           flexGrow: 1,
           width: { lg: `calc(100% - ${drawerWidth}px)` },
+          overflowX: "hidden",
         }}
       >
         <Toolbar />
