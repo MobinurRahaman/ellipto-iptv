@@ -47,7 +47,7 @@ export default function Home() {
   const [dataToShow, setDataToShow] = useState([]);
 
   const chipStackRef = useRef(null);
-  const { selectedPlaylistName, setCurrentChannelData } =
+  const { selectedPlaylistName, searchTerm, setCurrentChannelData } =
     useContext(GlobalContext);
 
   const perPage = 30;
@@ -95,10 +95,13 @@ export default function Home() {
         .then((result) => {
           const filteredData =
             selectedCategoryIndex === 0
-              ? [...result[0]?.data]
+              ? result[0]?.data?.filter((item) =>
+                  item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
               : result[0]?.data?.filter(
                   (item) =>
-                    item.group.title === categoryNames[selectedCategoryIndex]
+                    item.group.title === categoryNames[selectedCategoryIndex] &&
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase())
                 );
           setTotalDataToShow(filteredData.length);
           setDataToShow(
@@ -106,7 +109,7 @@ export default function Home() {
           );
         });
     });
-  }, [selectedPlaylistName, selectedCategoryIndex]);
+  }, [selectedPlaylistName, selectedCategoryIndex, searchTerm]);
 
   useLiveQuery(() => {
     if (pageNum > 1) {
@@ -118,10 +121,14 @@ export default function Home() {
           .then((result) => {
             const filteredData =
               selectedCategoryIndex === 0
-                ? [...result[0]?.data]
+                ? result[0]?.data?.filter((item) =>
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
                 : result[0]?.data?.filter(
                     (item) =>
-                      item.group.title === categoryNames[selectedCategoryIndex]
+                      item.group.title ===
+                        categoryNames[selectedCategoryIndex] &&
+                      item.name.toLowerCase().includes(searchTerm.toLowerCase())
                   );
             setTotalDataToShow(filteredData.length);
             setDataToShow(

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 // Components
 import AppBar from "@mui/material/AppBar";
@@ -16,12 +16,17 @@ import Toolbar from "@mui/material/Toolbar";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import SettingsIcon from "@mui/icons-material/Settings";
 import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ClearIcon from "@mui/icons-material/Clear";
 // Hooks
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLivePlaylistNames } from "../hooks/dbhooks";
@@ -36,12 +41,32 @@ function Page(props) {
   const playlistNames = useLivePlaylistNames();
   const { window, menu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Context
-  const { selectedPlaylistName, setSelectedPlaylistName } =
+  const [searchBarOpen, setSearchBarOpen] = useState(false);
+
+  const searchFieldRef = useRef(null);
+
+  const { selectedPlaylistName, setSelectedPlaylistName, setSearchTerm } =
     useContext(GlobalContext);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+  const handleSearchBarToggle = () => {
+    setSearchBarOpen(!searchBarOpen);
+    if (searchFieldRef.current) {
+      searchFieldRef.current.value = "";
+      setSearchTerm("");
+    }
+  };
+  const handleSearchFieldClear = () => {
+    if (searchFieldRef.current) {
+      searchFieldRef.current.value = "";
+      setSearchTerm("");
+      searchFieldRef.current.focus();
+    }
+  };
+  const handleSearchTermChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   const drawer = (
@@ -133,24 +158,77 @@ function Page(props) {
           ml: { lg: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { lg: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {pathname === "/" && selectedPlaylistName
-              ? selectedPlaylistName
-              : props.title}
-          </Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          {menu}
-        </Toolbar>
+        {searchBarOpen ? (
+          <Toolbar>
+            <Paper
+              elevation={0}
+              component="form"
+              sx={{
+                mx: -2,
+                p: "2px 4px",
+                display: "flex",
+                flex: 1,
+                alignItems: "center",
+                bgcolor: "primary.main",
+                color: "#fff",
+              }}
+            >
+              <IconButton
+                color="inherit"
+                sx={{ p: "10px" }}
+                aria-label="hide search field"
+                onClick={handleSearchBarToggle}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+              <InputBase
+                inputRef={searchFieldRef}
+                autoFocus
+                sx={{ flex: 1, color: "inherit" }}
+                placeholder="Search for channels"
+                inputProps={{ "aria-label": "search for channels" }}
+                onChange={handleSearchTermChange}
+              />
+              <IconButton
+                color="inherit"
+                sx={{ p: "10px" }}
+                aria-label="clear search field"
+                onClick={handleSearchFieldClear}
+              >
+                <ClearIcon />
+              </IconButton>
+            </Paper>
+          </Toolbar>
+        ) : (
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { lg: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              {pathname === "/" && selectedPlaylistName
+                ? selectedPlaylistName
+                : props.title}
+            </Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            {pathname === "/" && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="end"
+                onClick={handleSearchBarToggle}
+              >
+                <SearchIcon />
+              </IconButton>
+            )}
+            {menu}
+          </Toolbar>
+        )}
       </AppBar>
       <Box
         component="nav"

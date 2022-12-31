@@ -11,6 +11,7 @@ export const GlobalContext = createContext();
 
 function App() {
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentChannelData, setCurrentChannelData] = useState({});
 
   // Get selectedPlaylistName from localStorage if it exists or not empty
@@ -33,6 +34,8 @@ function App() {
       value={{
         selectedPlaylistName,
         setSelectedPlaylistName,
+        searchTerm,
+        setSearchTerm,
         currentChannelData,
         setCurrentChannelData,
       }}
