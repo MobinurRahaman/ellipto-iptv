@@ -164,7 +164,7 @@ export default function Home() {
   };
 
   return (
-    <Page title="React IPTV">
+    <Page title="Ellipto IPTV">
       <Stack
         ref={chipStackRef}
         direction="row"

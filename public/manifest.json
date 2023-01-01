@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "name": "Ellipto IPTV",
+  "short_name": "Ellipto IPTV",
+  "description": "Ellipto IPTV is a progressive web app to watch m3u or m3u8 playlists",
   "icons": [
     {
       "src": "favicon.ico",
@@ -16,10 +17,34 @@
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "description": "Open iptv home",
+      "url": "/?source=pwa",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Playlists",
+      "short_name": "Playlists",
+      "description": "Manage playlists",
+      "url": "/playlists/?source=pwa",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ],
+  "id": "/?source=pwa",
+  "start_url": "/?source=pwa",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "categories": ["video"],
+  "theme_color": "#1976d2",
+  "background_color": "#000000"
 }
