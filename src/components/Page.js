@@ -1,6 +1,7 @@
 import { useState, useContext, useRef } from "react";
 import PropTypes from "prop-types";
-// Components
+// MUI
+import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -35,11 +36,12 @@ import { GlobalContext } from "../App";
 const drawerWidth = 240;
 
 function Page(props) {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   // Get playlist names from custom hook
   const playlistNames = useLivePlaylistNames();
-  const { window, menu } = props;
+  const { window, addPlaylistMenu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchBarOpen, setSearchBarOpen] = useState(false);
 
@@ -226,7 +228,7 @@ function Page(props) {
                 <SearchIcon />
               </IconButton>
             )}
-            {menu}
+            {addPlaylistMenu}
           </Toolbar>
         )}
       </AppBar>
@@ -239,7 +241,9 @@ function Page(props) {
         <SwipeableDrawer
           container={container}
           variant="temporary"
+          anchor={theme.direction === "rtl" ? "right" : "left"}
           open={mobileOpen}
+          onOpen={handleDrawerToggle}
           onClose={handleDrawerToggle}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.

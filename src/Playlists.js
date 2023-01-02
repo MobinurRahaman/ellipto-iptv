@@ -175,8 +175,8 @@ export default function Playlists() {
       .delete();
   };
 
-  // Create add to playlist menu to share to <Page/> component as a prop
-  const menu = (
+  // Create add playlist menu to share to <Page/> component as a prop
+  const addPlaylistMenu = (
     <>
       <IconButton
         edge="end"
@@ -221,7 +221,7 @@ export default function Playlists() {
   );
 
   return (
-    <Page title="Playlists" menu={menu}>
+    <Page title="Playlists" addPlaylistMenu={addPlaylistMenu}>
       <List>
         {playlistNames?.map((playlistName, index) => (
           <ListItem
