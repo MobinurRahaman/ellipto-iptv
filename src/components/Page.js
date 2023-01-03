@@ -30,6 +30,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ClearIcon from "@mui/icons-material/Clear";
 // Hooks
 import { useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { useLivePlaylistNames } from "../hooks/dbhooks";
 import { GlobalContext } from "../App";
 
@@ -151,139 +152,148 @@ function Page(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { lg: `calc(100% - ${drawerWidth}px)` },
-          ml: { lg: `${drawerWidth}px` },
-        }}
-      >
-        {searchBarOpen ? (
-          <Toolbar>
-            <Paper
-              elevation={0}
-              component="form"
-              sx={{
-                mx: -2,
-                p: "2px 4px",
-                display: "flex",
-                flex: 1,
-                alignItems: "center",
-                bgcolor: "primary.main",
-                color: "#fff",
-              }}
-            >
-              <IconButton
-                color="inherit"
-                sx={{ p: "10px" }}
-                aria-label="hide search field"
-                onClick={handleSearchBarToggle}
+    <>
+      <Helmet>
+        <meta
+          name="theme-color"
+          content={theme.palette.mode === "light" ? "primary.main" : "#282424"}
+        />
+      </Helmet>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          sx={{
+            width: { lg: `calc(100% - ${drawerWidth}px)` },
+            ml: { lg: `${drawerWidth}px` },
+          }}
+        >
+          {searchBarOpen ? (
+            <Toolbar>
+              <Paper
+                elevation={0}
+                component="form"
+                sx={{
+                  mx: -2,
+                  p: "2px 4px",
+                  display: "flex",
+                  flex: 1,
+                  alignItems: "center",
+                  bgcolor:
+                    theme.palette.mode === "light" ? "primary.main" : "#282424",
+                  color: "#fff",
+                }}
               >
-                <ArrowBackIcon />
-              </IconButton>
-              <InputBase
-                inputRef={searchFieldRef}
-                autoFocus
-                sx={{ flex: 1, color: "inherit" }}
-                placeholder="Search for channels"
-                inputProps={{ "aria-label": "search for channels" }}
-                onChange={handleSearchTermChange}
-              />
-              <IconButton
-                color="inherit"
-                sx={{ p: "10px" }}
-                aria-label="clear search field"
-                onClick={handleSearchFieldClear}
-              >
-                <ClearIcon />
-              </IconButton>
-            </Paper>
-          </Toolbar>
-        ) : (
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { lg: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              {pathname === "/" && selectedPlaylistName
-                ? selectedPlaylistName
-                : props.title}
-            </Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            {pathname === "/" && (
+                <IconButton
+                  color="inherit"
+                  sx={{ p: "10px" }}
+                  aria-label="hide search field"
+                  onClick={handleSearchBarToggle}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+                <InputBase
+                  inputRef={searchFieldRef}
+                  autoFocus
+                  sx={{ flex: 1, color: "inherit" }}
+                  placeholder="Search for channels"
+                  inputProps={{ "aria-label": "search for channels" }}
+                  onChange={handleSearchTermChange}
+                />
+                <IconButton
+                  color="inherit"
+                  sx={{ p: "10px" }}
+                  aria-label="clear search field"
+                  onClick={handleSearchFieldClear}
+                >
+                  <ClearIcon />
+                </IconButton>
+              </Paper>
+            </Toolbar>
+          ) : (
+            <Toolbar>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
-                edge="end"
-                onClick={handleSearchBarToggle}
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, display: { lg: "none" } }}
               >
-                <SearchIcon />
+                <MenuIcon />
               </IconButton>
-            )}
-            {addPlaylistMenu}
-          </Toolbar>
-        )}
-      </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
-        aria-label="menu"
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <SwipeableDrawer
-          container={container}
-          variant="temporary"
-          anchor={theme.direction === "rtl" ? "right" : "left"}
-          open={mobileOpen}
-          onOpen={handleDrawerToggle}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+              <Typography variant="h6" noWrap component="div">
+                {pathname === "/" && selectedPlaylistName
+                  ? selectedPlaylistName
+                  : props.title}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }} />
+              {pathname === "/" && (
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="end"
+                  onClick={handleSearchBarToggle}
+                >
+                  <SearchIcon />
+                </IconButton>
+              )}
+              {addPlaylistMenu}
+            </Toolbar>
+          )}
+        </AppBar>
+        <Box
+          component="nav"
+          sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
+          aria-label="menu"
+        >
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <SwipeableDrawer
+            container={container}
+            variant="temporary"
+            anchor={theme.direction === "rtl" ? "right" : "left"}
+            open={mobileOpen}
+            onOpen={handleDrawerToggle}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: "block", lg: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </SwipeableDrawer>
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: "none", lg: "block" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+        <Box
+          component="main"
           sx={{
-            display: { xs: "block", lg: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
+            flexGrow: 1,
+            width: { lg: `calc(100% - ${drawerWidth}px)` },
+            overflowX: "hidden",
           }}
         >
-          {drawer}
-        </SwipeableDrawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", lg: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
+          <Toolbar />
+          {props.children}
+        </Box>
       </Box>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          width: { lg: `calc(100% - ${drawerWidth}px)` },
-          overflowX: "hidden",
-        }}
-      >
-        <Toolbar />
-        {props.children}
-      </Box>
-    </Box>
+    </>
   );
 }
 

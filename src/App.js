@@ -1,4 +1,7 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, useMemo, createContext } from "react";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Routes } from "react-router";
 
@@ -13,6 +16,18 @@ function App() {
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentChannelData, setCurrentChannelData] = useState({});
+
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? "dark" : "light",
+        },
+      }),
+    [prefersDarkMode]
+  );
 
   // Get selectedPlaylistName from localStorage if it exists or not empty
   useEffect(() => {
@@ -40,14 +55,17 @@ function App() {
         setCurrentChannelData,
       }}
     >
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/playlists" element={<Playlists />} />
-          <Route path="/live-tv/:channelId" element={<LiveTv />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/playlists" element={<Playlists />} />
+            <Route path="/live-tv/:channelId" element={<LiveTv />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </GlobalContext.Provider>
   );
 }
