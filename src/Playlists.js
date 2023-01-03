@@ -1,6 +1,7 @@
-import { useState, useContext } from "react";
-// Components
+import { useState, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import Page from "./components/Page";
+// MUI
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -34,6 +35,7 @@ db.version(1).stores({
 });
 
 export default function Playlists() {
+  const navigate = useNavigate();
   // Get playlist names from custom hook
   const playlistNames = useLivePlaylistNames();
   // _ States
@@ -43,6 +45,8 @@ export default function Playlists() {
   const [addRemotePlaylistDialogOpen, setAddRemotePlaylistDialogOpen] =
     useState(false);
   const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
+  // Add from device ref
+  const fileInputRef = useRef(null);
   // Playlist context menu states
   const [playlistContextMenuAnchorEl, setPlaylistContextMenuAnchorEl] =
     useState(null);
@@ -74,7 +78,7 @@ export default function Playlists() {
     setAddRemotePlaylistDialogOpen(true);
   };
   const handlePlaylistUrlChange = (event) => {
-    setRemotePlaylistUrl(event.target.value);
+    setRemotePlaylistUrl(event.target.value.trim());
   };
   const handleAddRemotePlaylistCancel = () => {
     setAddRemotePlaylistDialogOpen(false);
@@ -86,33 +90,9 @@ export default function Playlists() {
 
     fetch(remotePlaylistUrl)
       .then((res) => res.text())
-      .then((rawPlaylist) => {
-        // Convert IPTV playlist to JavaScript array of objects
-        const playlistData = parser.parse(rawPlaylist).items;
-
-        // If a valid IPTV playlist
-        if (playlistData.length > 0) {
-          db.playlists
-            .where("name")
-            .equalsIgnoreCase(playlistName)
-            .count()
-            .then((count) => {
-              // If this playlist doesn't exist in the database
-              if (count === 0) {
-                db.playlists.add({ name: playlistName, data: playlistData });
-                // If the first playlist is added, then make it selected by default
-                setSelectedPlaylistName(playlistName);
-                console.log(`${playlistName} playlist created`);
-              } else {
-                // If this playlist already exists in the database
-                alert(`${playlistName} playlist already exists`);
-              }
-            });
-        } else {
-          // If not a valid IPTV playlist
-          alert("This is not an IPTV playlist url");
-        }
-      })
+      .then((rawPlaylistData) =>
+        handleAddPlaylistToDB(playlistName, rawPlaylistData)
+      )
       .catch((error) => {
         !navigator.onLine && alert("No internet. Turn on internet connection");
         alert("Error");
@@ -120,6 +100,78 @@ export default function Playlists() {
       });
     // Empty remote playlist url
     setRemotePlaylistUrl("");
+  };
+
+  const handleAddPlaylistToDB = (playlistName, rawPlaylistData) => {
+    // Convert IPTV playlist to JavaScript array of objects
+    try {
+      const playlistData = parser.parse(rawPlaylistData).items;
+      // If a valid IPTV playlist
+      if (playlistData.length > 0) {
+        db.playlists
+          .where("name")
+          .equalsIgnoreCase(playlistName)
+          .count()
+          .then((count) => {
+            // If this playlist doesn't exist in the database
+            if (count === 0) {
+              db.playlists.add({ name: playlistName, data: playlistData });
+              // If the the playlist is added, then make it selected
+              setSelectedPlaylistName(playlistName);
+              console.log(`${playlistName} playlist created`);
+            } else {
+              // If this playlist already exists in the database
+              alert(`${playlistName} playlist already exists`);
+            }
+          });
+      } else {
+        alert("No playlist data found");
+      }
+    } catch {
+      const fileExt = playlistName.split(".").pop();
+      if (!["m3u", "m3u8"].includes(fileExt)) {
+        alert(
+          "This is not an IPTV playlist. Enter url or add file with m3u or m3u8 extension"
+        );
+      } else {
+        alert(
+          "Failed to parse playlist. Make sure that this is a valid playlist"
+        );
+      }
+    }
+  };
+
+  // Add playlist from device functions
+  const handleFilePickerOpen = () => {
+    if (fileInputRef.current) {
+      handleAddPlaylistMenuClose();
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileInputChange = (e) => {
+    if (fileInputRef.current) {
+      const file = e.target.files[0];
+      if (file) {
+        const fileName = file.name.split(/(\\|\/)/g).pop();
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = function (e) {
+          handleAddPlaylistToDB(fileName, e.target.result);
+          // Empty input file to listen to same file picking
+          fileInputRef.current.value = "";
+        };
+        reader.onerror = function (e) {
+          alert("Failed to read file");
+        };
+      }
+    }
+  };
+
+  // Playlist item function
+  const handlePlaylistItemClick = (playlistName) => {
+    setSelectedPlaylistName(playlistName);
+    navigate("/");
   };
 
   // Playlist context menu functions
@@ -139,7 +191,7 @@ export default function Playlists() {
     setRenamePlaylistDialogOpen(true);
   };
   const handlePlaylistNameChange = (event) => {
-    setRenamedPlaylistName(event.target.value);
+    setRenamedPlaylistName(event.target.value.trim());
   };
   const handleRenamePlaylistCancel = () => {
     setRenamePlaylistDialogOpen(false);
@@ -173,6 +225,9 @@ export default function Playlists() {
       .where("name")
       .equals(playlistNames[playlistTargetIndex])
       .delete();
+    if (selectedPlaylistName === playlistNames[playlistTargetIndex]) {
+      setSelectedPlaylistName(playlistNames[0]);
+    }
   };
 
   // Create add playlist menu to share to <Page/> component as a prop
@@ -210,13 +265,19 @@ export default function Playlists() {
           </ListItemIcon>
           <ListItemText>Add playlist from remote URL</ListItemText>
         </MenuItem>
-        <MenuItem disabled>
+        <MenuItem onClick={handleFilePickerOpen}>
           <ListItemIcon>
             <PhoneAndroidIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Add playlist from device</ListItemText>
         </MenuItem>
       </Menu>
+      <input
+        ref={fileInputRef}
+        type="file"
+        style={{ display: "none" }}
+        onChange={handleFileInputChange}
+      />
     </>
   );
 
@@ -227,6 +288,7 @@ export default function Playlists() {
           <ListItem
             button
             key={index}
+            onClick={() => handlePlaylistItemClick(playlistName)}
             secondaryAction={
               <IconButton
                 edge="end"
