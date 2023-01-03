@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import PropTypes from "prop-types";
 // MUI
 import { useTheme } from "@mui/material/styles";
@@ -48,8 +48,18 @@ function Page(props) {
 
   const searchFieldRef = useRef(null);
 
-  const { selectedPlaylistName, setSelectedPlaylistName, setSearchTerm } =
-    useContext(GlobalContext);
+  const {
+    selectedPlaylistName,
+    setSelectedPlaylistName,
+    searchTerm,
+    setSearchTerm,
+  } = useContext(GlobalContext);
+
+  useEffect(() => {
+    if (searchFieldRef.current) {
+      searchFieldRef.current.value = searchTerm;
+    }
+  }, [searchTerm]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -168,7 +178,7 @@ function Page(props) {
             ml: { lg: `${drawerWidth}px` },
           }}
         >
-          {searchBarOpen ? (
+          {searchBarOpen || searchTerm ? (
             <Toolbar>
               <Paper
                 elevation={0}
