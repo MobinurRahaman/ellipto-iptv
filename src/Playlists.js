@@ -44,7 +44,8 @@ export default function Playlists() {
   // Add remote playlist states
   const [addRemotePlaylistDialogOpen, setAddRemotePlaylistDialogOpen] =
     useState(false);
-  const [remotePlaylistUrl, setRemotePlaylistUrl] = useState(null);
+  const [remotePlaylistName, setRemotePlaylistName] = useState("");
+  const [remotePlaylistUrl, setRemotePlaylistUrl] = useState("");
   // Add from device ref
   const fileInputRef = useRef(null);
   // Playlist context menu states
@@ -77,16 +78,26 @@ export default function Playlists() {
     setAddPlaylistMenuAnchorEl(null);
     setAddRemotePlaylistDialogOpen(true);
   };
-  const handlePlaylistUrlChange = (event) => {
+  const handleRemotePlaylistNameChange = (event) => {
+    setRemotePlaylistName(event.target.value.trim());
+  };
+  const handleRemotePlaylistUrlChange = (event) => {
     setRemotePlaylistUrl(event.target.value.trim());
+  };
+  const handleRemotePlaylistUrlInputKeyUp = (event) => {
+    if (event.key === "Enter" && remotePlaylistUrl?.length > 0) {
+      handleAddRemotePlaylistTrigger();
+    }
   };
   const handleAddRemotePlaylistCancel = () => {
     setAddRemotePlaylistDialogOpen(false);
+    setRemotePlaylistName("");
     setRemotePlaylistUrl("");
   };
   const handleAddRemotePlaylistTrigger = () => {
     setAddRemotePlaylistDialogOpen(false);
-    const playlistName = remotePlaylistUrl.split("/").pop();
+    const playlistName =
+      remotePlaylistName || remotePlaylistUrl?.split("/").pop();
 
     fetch(remotePlaylistUrl)
       .then((res) => res.text())
@@ -94,12 +105,16 @@ export default function Playlists() {
         handleAddPlaylistToDB(playlistName, rawPlaylistData)
       )
       .catch((error) => {
-        !navigator.onLine && alert("No internet. Turn on internet connection");
-        alert("Error");
+        !navigator.onLine
+          ? alert("No internet. Turn on internet connection")
+          : alert("Error");
         console.log("error", error);
+      })
+      .finally(() => {
+        // Empty remote playlist name and url finally
+        setRemotePlaylistName("");
+        setRemotePlaylistUrl("");
       });
-    // Empty remote playlist url
-    setRemotePlaylistUrl("");
   };
 
   const handleAddPlaylistToDB = (playlistName, rawPlaylistData) => {
@@ -115,7 +130,10 @@ export default function Playlists() {
           .then((count) => {
             // If this playlist doesn't exist in the database
             if (count === 0) {
-              db.playlists.add({ name: playlistName, data: playlistData });
+              db.playlists.add({
+                name: playlistName,
+                data: playlistData,
+              });
               // If the the playlist is added, then make it selected
               setSelectedPlaylistName(playlistName);
               console.log(`${playlistName} playlist created`);
@@ -128,7 +146,7 @@ export default function Playlists() {
         alert("No playlist data found");
       }
     } catch {
-      const fileExt = playlistName.split(".").pop();
+      const fileExt = playlistName?.split(".").pop();
       if (!["m3u", "m3u8"].includes(fileExt)) {
         alert(
           "This is not an IPTV playlist. Enter url or add file with m3u or m3u8 extension"
@@ -153,7 +171,7 @@ export default function Playlists() {
     if (fileInputRef.current) {
       const file = e.target.files[0];
       if (file) {
-        const fileName = file.name.split(/(\\|\/)/g).pop();
+        const fileName = file.name?.split(/(\\|\/)/g).pop();
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = function (e) {
@@ -190,8 +208,16 @@ export default function Playlists() {
     setPlaylistContextMenuAnchorEl(null);
     setRenamePlaylistDialogOpen(true);
   };
-  const handlePlaylistNameChange = (event) => {
+  const handleNewPlaylistNameChange = (event) => {
     setRenamedPlaylistName(event.target.value.trim());
+  };
+  const handleRenamePlaylistDialogKeyUp = (event) => {
+    console.log(event.key);
+    if (event.key === "Enter" && renamedPlaylistName?.length > 0) {
+      handleRenamePlaylistTrigger();
+    } else if (event.key === "Escape") {
+      handleRenamePlaylistCancel();
+    }
   };
   const handleRenamePlaylistCancel = () => {
     setRenamePlaylistDialogOpen(false);
@@ -202,7 +228,9 @@ export default function Playlists() {
     await db.playlists
       .where("name")
       .equals(playlistNames[playlistTargetIndex])
-      .modify({ name: renamedPlaylistName });
+      .modify({
+        name: renamedPlaylistName,
+      });
     // Empty renamed playlist name
     setRenamedPlaylistName("");
     // If current selected playlist name is changed, then update the state of selectedPlaylistName
@@ -342,13 +370,25 @@ export default function Playlists() {
           <TextField
             autoFocus
             margin="dense"
+            name="filename"
+            autoComplete="off"
+            label="Playlist Name (optional)"
+            type="text"
+            fullWidth
+            variant="standard"
+            onChange={handleRemotePlaylistNameChange}
+          />
+          <TextField
+            required
+            margin="dense"
             name="url"
             autoComplete="off"
             label="Playlist URL"
             type="url"
             fullWidth
             variant="standard"
-            onChange={handlePlaylistUrlChange}
+            onChange={handleRemotePlaylistUrlChange}
+            onKeyUp={handleRemotePlaylistUrlInputKeyUp}
           />
         </DialogContent>
         <DialogActions>
@@ -364,6 +404,7 @@ export default function Playlists() {
       <Dialog
         open={renamePlaylistDialogOpen}
         onClose={handleRenamePlaylistDialogOpen}
+        onKeyUp={handleRenamePlaylistDialogKeyUp}
       >
         <DialogTitle>
           Rename {playlistNames[playlistTargetIndex]} playlist
@@ -379,7 +420,7 @@ export default function Playlists() {
             fullWidth
             variant="standard"
             inputProps={{ maxLength: 256 }}
-            onChange={handlePlaylistNameChange}
+            onChange={handleNewPlaylistNameChange}
           />
         </DialogContent>
         <DialogActions>
