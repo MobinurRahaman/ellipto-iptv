@@ -30,7 +30,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ClearIcon from "@mui/icons-material/Clear";
 // Hooks
 import { useNavigate, useLocation } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useLivePlaylistNames } from "../hooks/dbhooks";
 import { GlobalContext } from "../App";
 
@@ -162,7 +162,7 @@ function Page(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <>
+    <HelmetProvider>
       <Helmet>
         <meta
           name="theme-color"
@@ -303,7 +303,7 @@ function Page(props) {
           {props.children}
         </Box>
       </Box>
-    </>
+    </HelmetProvider>
   );
 }
 
