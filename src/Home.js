@@ -77,10 +77,10 @@ export default function Home() {
         .equals(selectedPlaylistName)
         .toArray()
         .then((result) => {
-          setTotalDataToShow(result[0].data.length);
+          setTotalDataToShow(result[0]?.data?.length);
           setCategoryNames([
             "All channels ",
-            ...new Set(result[0].data.map((item) => item.group.title)),
+            ...new Set(result[0]?.data?.map((item) => item.group.title)),
           ]);
         });
     });
@@ -103,9 +103,11 @@ export default function Home() {
                     item.group.title === categoryNames[selectedCategoryIndex] &&
                     item.name.toLowerCase().includes(searchTerm.toLowerCase())
                 );
-          setTotalDataToShow(filteredData.length);
+          setTotalDataToShow(filteredData?.length);
           setDataToShow(
-            Array.from(new Set([...filteredData.slice(0, perPage)]))
+            filteredData?.length > 0
+              ? Array.from(new Set([...filteredData?.slice(0, perPage)]))
+              : []
           );
         });
     });
@@ -130,12 +132,12 @@ export default function Home() {
                         categoryNames[selectedCategoryIndex] &&
                       item.name.toLowerCase().includes(searchTerm.toLowerCase())
                   );
-            setTotalDataToShow(filteredData.length);
+            setTotalDataToShow(filteredData?.length);
             setDataToShow(
               Array.from(
                 new Set([
                   ...dataToShow,
-                  ...filteredData.slice(
+                  ...filteredData?.slice(
                     Math.max(0, (pageNum - 1) * perPage),
                     pageNum * perPage
                   ),
