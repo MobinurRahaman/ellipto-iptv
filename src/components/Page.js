@@ -51,6 +51,7 @@ function Page(props) {
   const {
     selectedPlaylistName,
     setSelectedPlaylistName,
+    setSelectedCategoryName,
     searchTerm,
     setSearchTerm,
   } = useContext(GlobalContext);
@@ -143,6 +144,7 @@ function Page(props) {
               onClick={() => {
                 handleDrawerToggle();
                 setSelectedPlaylistName(playlistName);
+                setSelectedCategoryName("All channels");
                 localStorage.setItem("selectedPlaylistName", playlistName);
                 pathname !== "/" && navigate("/");
               }}

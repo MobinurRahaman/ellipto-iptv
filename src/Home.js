@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
@@ -41,23 +41,26 @@ db.version(1).stores({
 export default function Home() {
   const navigate = useNavigate();
   const [categoryNames, setCategoryNames] = useState([]);
-  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(0);
   const [totalDataToShow, setTotalDataToShow] = useState(0);
   const [pageNum, setPageNum] = useState(1);
   const [dataToShow, setDataToShow] = useState([]);
 
   const chipStackRef = useRef(null);
-  const { selectedPlaylistName, searchTerm, setCurrentChannelData } =
-    useContext(GlobalContext);
+  const {
+    selectedPlaylistName,
+    selectedCategoryName,
+    setSelectedCategoryName,
+    searchTerm,
+    setCurrentChannelData,
+  } = useContext(GlobalContext);
 
   const perPage = 30;
 
   useEffect(() => {
-    setSelectedCategoryIndex(0);
     setPageNum(1);
     setDataToShow([]);
     setTotalDataToShow(0);
-    scrollToTop();
+    window.scrollTo(0, 0);
     chipStackRef?.current?.scrollTo({
       left: 0,
       behavior: "smooth",
@@ -68,7 +71,7 @@ export default function Home() {
     setPageNum(1);
     setDataToShow([]);
     setTotalDataToShow(0);
-  }, [selectedCategoryIndex]);
+  }, [selectedCategoryName, searchTerm]);
 
   useLiveQuery(() => {
     db.open().then(() => {
@@ -79,7 +82,7 @@ export default function Home() {
         .then((result) => {
           setTotalDataToShow(result[0]?.data?.length);
           setCategoryNames([
-            "All channels ",
+            "All channels",
             ...new Set(result[0]?.data?.map((item) => item.group.title)),
           ]);
         });
@@ -94,13 +97,13 @@ export default function Home() {
         .toArray()
         .then((result) => {
           const filteredData =
-            selectedCategoryIndex === 0
+            selectedCategoryName === "All channels"
               ? result[0]?.data?.filter((item) =>
                   item.name.toLowerCase().includes(searchTerm.toLowerCase())
                 )
               : result[0]?.data?.filter(
                   (item) =>
-                    item.group.title === categoryNames[selectedCategoryIndex] &&
+                    item.group.title === selectedCategoryName &&
                     item.name.toLowerCase().includes(searchTerm.toLowerCase())
                 );
           setTotalDataToShow(filteredData?.length);
@@ -111,7 +114,7 @@ export default function Home() {
           );
         });
     });
-  }, [selectedPlaylistName, selectedCategoryIndex, searchTerm]);
+  }, [selectedPlaylistName, selectedCategoryName, searchTerm]);
 
   useLiveQuery(() => {
     if (pageNum > 1) {
@@ -122,14 +125,13 @@ export default function Home() {
           .toArray()
           .then((result) => {
             const filteredData =
-              selectedCategoryIndex === 0
+              selectedCategoryName === "All channels"
                 ? result[0]?.data?.filter((item) =>
                     item.name.toLowerCase().includes(searchTerm.toLowerCase())
                   )
                 : result[0]?.data?.filter(
                     (item) =>
-                      item.group.title ===
-                        categoryNames[selectedCategoryIndex] &&
+                      item.group.title === selectedCategoryName &&
                       item.name.toLowerCase().includes(searchTerm.toLowerCase())
                   );
             setTotalDataToShow(filteredData?.length);
@@ -149,16 +151,16 @@ export default function Home() {
     }
   }, [pageNum]);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
   const fetchMoreData = () => {
     setPageNum((prevPageNum) => prevPageNum + 1);
   };
+
+  const onChipRefChange = useCallback((currrentChip) => {
+    if (currrentChip !== null) {
+      // Currrent chip referenced by ref has changed and exists
+      currrentChip.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
 
   const handleChannelClick = (channelObj) => {
     setCurrentChannelData(channelObj);
@@ -179,12 +181,13 @@ export default function Home() {
       >
         {categoryNames?.map((categoryName, categoryIndex) => (
           <Chip
+            ref={selectedCategoryName === categoryName ? onChipRefChange : null}
             label={categoryName}
             color="primary"
             variant={
-              selectedCategoryIndex === categoryIndex ? "filled" : "outlined"
+              selectedCategoryName === categoryName ? "filled" : "outlined"
             }
-            onClick={() => setSelectedCategoryIndex(categoryIndex)}
+            onClick={() => setSelectedCategoryName(categoryName)}
             key={categoryIndex}
           />
         ))}

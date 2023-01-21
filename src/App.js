@@ -14,6 +14,7 @@ export const GlobalContext = createContext();
 
 function App() {
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentChannelData, setCurrentChannelData] = useState({});
 
@@ -29,13 +30,22 @@ function App() {
     [prefersDarkMode]
   );
 
-  // Get selectedPlaylistName from localStorage if it exists or not empty
+  // Get selectedPlaylistName and selectedCategoryName from localStorage if they exist or not empty on mount
   useEffect(() => {
     if (
       localStorage.getItem("selectedPlaylistName") !== null &&
       localStorage.getItem("selectedPlaylistName") !== ""
     ) {
       setSelectedPlaylistName(localStorage.getItem("selectedPlaylistName"));
+    }
+
+    if (
+      localStorage.getItem("selectedCategoryName") !== null &&
+      localStorage.getItem("selectedCategoryName") !== ""
+    ) {
+      setSelectedCategoryName(localStorage.getItem("selectedCategoryName"));
+    } else {
+      setSelectedCategoryName("All channels");
     }
   }, []);
 
@@ -44,11 +54,20 @@ function App() {
     localStorage.setItem("selectedPlaylistName", selectedPlaylistName);
   }, [selectedPlaylistName]);
 
+  // Store selectedCategoryName in localStorage if it is changed
+  useEffect(() => {
+    if (selectedCategoryName) {
+      localStorage.setItem("selectedCategoryName", selectedCategoryName);
+    }
+  }, [selectedCategoryName]);
+
   return (
     <GlobalContext.Provider
       value={{
         selectedPlaylistName,
         setSelectedPlaylistName,
+        selectedCategoryName,
+        setSelectedCategoryName,
         searchTerm,
         setSearchTerm,
         currentChannelData,
