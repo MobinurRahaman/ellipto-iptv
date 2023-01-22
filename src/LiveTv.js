@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import Box from "@mui/material/Box";
 import { Player, Hls, DefaultUi } from "@vime/react";
 import "@vime/core/themes/default.css";
 import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
+import Page from "./components/Page";
 
 // Create database and playlist store/collection
 const db = new Dexie("IPTV");
@@ -48,21 +50,25 @@ export default function LiveTv() {
   };
 
   return (
-    <>
-      {error.message ? (
-        <>{error.message}</>
-      ) : (
-        <Player>
-          <Hls version="latest" config={hlsConfig} poster="">
-            <source
-              data-src={currentChannelData?.url}
-              type="application/x-mpegURL"
-            />
-          </Hls>
-          <DefaultUi />
-          {/* ... */}
-        </Player>
-      )}
-    </>
+    <Page title="Ellipto IPTV">
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+        <Box sx={{ flex: 1, height: "auto", position: "sticky", top: 54 }}>
+          {error.message ? (
+            <>{error.message}</>
+          ) : (
+            <Player tabIndex="0" style={{ outline: "none" }}>
+              <Hls version="latest" config={hlsConfig} poster="">
+                <source
+                  data-src={currentChannelData?.url}
+                  type="application/x-mpegURL"
+                />
+              </Hls>
+              <DefaultUi />
+            </Player>
+          )}
+        </Box>
+        <Box sx={{ width: { xs: "100%", md: 240 } }}></Box>
+      </Box>
+    </Page>
   );
 }
