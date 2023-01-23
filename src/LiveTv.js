@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Player, Hls, DefaultUi } from "@vime/react";
@@ -17,6 +17,8 @@ export default function LiveTv() {
   const { channelId } = useParams();
   const [currentChannelData, setCurrentChannelData] = useState([]);
   const [error, setError] = useState({ code: null, message: "" });
+  const [playbackQuality, setPlaybackQuality] = useState("Auto");
+  const videoPlayer = useRef(null);
 
   useLiveQuery(() => {
     db.open().then(() => {
@@ -42,6 +44,61 @@ export default function LiveTv() {
     });
   }, [channelId]);
 
+  useEffect(() => {
+    if (
+      localStorage.getItem("playbackQuality") !== null &&
+      localStorage.getItem("playbackQuality") !== ""
+    ) {
+      videoPlayer.current?.addEventListener(
+        "vmPlaybackQualitiesChange",
+        (data) => {
+          if (data.detail.length > 0) {
+            const savedQuality = localStorage.getItem("playbackQuality");
+            let playbackQualities = data.detail;
+
+            if (parseInt(savedQuality)) {
+              // Initialize a variable with lowest quality to store closestQuality
+              let closestQuality = playbackQualities[1];
+              // This lowest quality will be selected if no other quality greater than this is the closest
+
+              for (let i = 0; i < playbackQualities.length; i++) {
+                if (parseInt(playbackQualities[i]) <= parseInt(savedQuality)) {
+                  // Update closestQuality variable with current quality
+                  closestQuality = playbackQualities[i];
+                }
+              }
+
+              if (parseInt(closestQuality) >= 144) {
+                setPlaybackQuality(closestQuality);
+              }
+            }
+            // else select auto quality
+          }
+        }
+      );
+    }
+
+    videoPlayer.current?.addEventListener("vmPlaybackReady", (state) => {
+      videoPlayer.current?.addEventListener(
+        "vmPlaybackQualityChange",
+        (data) => {
+          localStorage.setItem("playbackQuality", data.detail);
+        }
+      );
+    });
+  }, []);
+
+  useEffect(() => {
+    videoPlayer.current?.addEventListener("vmPlaybackReady", (state) => {
+      // If player is ready
+      if (state.detail) {
+        videoPlayer.current?.canSetPlaybackQuality().then((bool) => {
+          if (bool) videoPlayer.current.playbackQuality = playbackQuality;
+        });
+      }
+    });
+  }, [playbackQuality]);
+
   /**
    * @see https://hls-js.netlify.app/api-docs/file/src/config.ts.html.
    */
@@ -56,7 +113,7 @@ export default function LiveTv() {
           {error.message ? (
             <>{error.message}</>
           ) : (
-            <Player tabIndex="0" style={{ outline: "none" }}>
+            <Player ref={videoPlayer} tabIndex="0" style={{ outline: "none" }}>
               <Hls version="latest" config={hlsConfig} poster="">
                 <source
                   data-src={currentChannelData?.url}
