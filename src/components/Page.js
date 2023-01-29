@@ -58,6 +58,16 @@ function Page(props) {
   } = useContext(GlobalContext);
 
   useEffect(() => {
+    if (
+      localStorage.getItem("selectedPlaylistName") === null ||
+      localStorage.getItem("selectedPlaylistName") === ""
+    ) {
+      if (playlistNames.length > 0) setSelectedPlaylistName(playlistNames[0]);
+    }
+    // eslint-disable-next-line
+  }, [playlistNames]);
+
+  useEffect(() => {
     if (searchFieldRef.current) {
       searchFieldRef.current.value = searchTerm;
     }
