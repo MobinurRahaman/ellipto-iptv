@@ -44,7 +44,6 @@ function Page(props) {
   const playlistNames = useLivePlaylistNames();
   const { window, addPlaylistMenu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchBarOpen, setSearchBarOpen] = useState(false);
 
   const searchFieldRef = useRef(null);
 
@@ -52,6 +51,8 @@ function Page(props) {
     selectedPlaylistName,
     setSelectedPlaylistName,
     setSelectedCategoryName,
+    searchBarOpen,
+    setSearchBarOpen,
     searchTerm,
     setSearchTerm,
   } = useContext(GlobalContext);
@@ -65,10 +66,12 @@ function Page(props) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const handleSearchBarToggle = () => {
-    setSearchBarOpen(!searchBarOpen);
+  const handleSearchBarOpen = () => {
+    setSearchBarOpen(true);
+  };
+  const handleSearchBarClose = () => {
+    setSearchBarOpen(false);
     if (searchFieldRef.current) {
-      searchFieldRef.current.value = "";
       setSearchTerm("");
     }
   };
@@ -180,7 +183,7 @@ function Page(props) {
             ml: { lg: `${drawerWidth}px` },
           }}
         >
-          {searchBarOpen || searchTerm ? (
+          {pathname === "/" && (searchBarOpen || searchTerm) ? (
             <Toolbar>
               <Paper
                 elevation={0}
@@ -200,7 +203,7 @@ function Page(props) {
                   color="inherit"
                   sx={{ p: "10px" }}
                   aria-label="hide search field"
-                  onClick={handleSearchBarToggle}
+                  onClick={handleSearchBarClose}
                 >
                   <ArrowBackIcon />
                 </IconButton>
@@ -244,7 +247,7 @@ function Page(props) {
                   color="inherit"
                   aria-label="open drawer"
                   edge="end"
-                  onClick={handleSearchBarToggle}
+                  onClick={handleSearchBarOpen}
                 >
                   <SearchIcon />
                 </IconButton>

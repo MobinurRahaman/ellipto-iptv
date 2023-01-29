@@ -15,6 +15,7 @@ export const GlobalContext = createContext();
 function App() {
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [searchBarOpen, setSearchBarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentChannelData, setCurrentChannelData] = useState({});
 
@@ -68,6 +69,8 @@ function App() {
         setSelectedPlaylistName,
         selectedCategoryName,
         setSelectedCategoryName,
+        searchBarOpen,
+        setSearchBarOpen,
         searchTerm,
         setSearchTerm,
         currentChannelData,
