@@ -1,6 +1,24 @@
 {
   "name": "ellipto-iptv",
   "version": "0.1.0",
+  "description": "Ellipto IPTV is a progressive web app to watch m3u and m3u8 playlists",
+  "homepage": "https://elliptoiptv.vercel.app",
+  "author": {
+    "name": "Md Mobinur Rahaman",
+    "email": "mobinurrahaman@gmail.com"
+  },
+  "keywords": [
+    "react",
+    "mui",
+    "pwa",
+    "dexiejs",
+    "iptv",
+    "m3u",
+    "m3u8",
+    "player",
+    "video",
+    "tv"
+  ],
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -31,17 +49,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app", "react-app/jest"]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
