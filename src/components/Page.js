@@ -198,6 +198,8 @@ function Page(props) {
               <Paper
                 elevation={0}
                 component="form"
+                // Disable form submit
+                onSubmit={(e) => e.preventDefault()}
                 sx={{
                   mx: -2,
                   p: "2px 4px",
