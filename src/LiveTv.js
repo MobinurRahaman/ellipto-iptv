@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Player, Hls, DefaultUi } from "@vime/react";
 import "@vime/core/themes/default.css";
 import Dexie from "dexie";
@@ -99,6 +101,15 @@ export default function LiveTv() {
     });
   }, [playbackQuality]);
 
+  const onPlayerError = (e) => {
+    if (e?.detail?.data?.networkDetails?.status === 403) {
+      setError({
+        code: 403,
+        message: "Forbidden",
+      });
+    }
+  };
+
   /**
    * @see https://hls-js.netlify.app/api-docs/file/src/config.ts.html.
    */
@@ -110,10 +121,33 @@ export default function LiveTv() {
     <Page title="Ellipto IPTV">
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
         <Box sx={{ flex: 1, height: "auto", position: "sticky", top: 54 }}>
-          {error.message ? (
-            <>{error.message}</>
-          ) : (
-            <Player ref={videoPlayer} tabIndex="0" style={{ outline: "none" }}>
+          {
+            <Player
+              ref={videoPlayer}
+              onVmError={onPlayerError}
+              tabIndex="0"
+              style={{ outline: "none" }}
+            >
+              {error.message ? (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 1,
+                    zIndex: 2,
+                    bgcolor: "#000",
+                    color: "#fff",
+                  }}
+                >
+                  <ErrorOutlineIcon fontSize="large" />
+                  <Typography variant="body1"> {error.message}</Typography>
+                </Box>
+              ) : null}
               <Hls version="latest" config={hlsConfig} poster="">
                 <source
                   data-src={currentChannelData?.url}
@@ -122,7 +156,7 @@ export default function LiveTv() {
               </Hls>
               <DefaultUi />
             </Player>
-          )}
+          }
         </Box>
         <Box sx={{ width: { xs: "100%", md: 240 } }}></Box>
       </Box>
