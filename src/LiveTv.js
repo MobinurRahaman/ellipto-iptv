@@ -47,6 +47,53 @@ export default function LiveTv() {
   }, [channelId]);
 
   useEffect(() => {
+    document.addEventListener("keydown", (e) => {
+      e.preventDefault();
+      videoPlayer.current?.focus();
+    });
+
+    // Refocus on the videoPlayer on fullscreen change
+    videoPlayer.current.onfullscreenchange = () => {
+      videoPlayer.current.focus();
+    };
+
+    document.addEventListener("keydown", (e) => {
+      // Enable keyboard shortcuts in fullscreen
+      if (
+        videoPlayer.current.isFullscreenActive &&
+        e.target !== videoPlayer.current
+      ) {
+        // Create a new keyboard event
+        const keyboardEvent = new KeyboardEvent("keydown", {
+          key: e.key,
+          code: e.code,
+          shiftKey: e.shiftKey,
+          ctrlKey: e.ctrlKey,
+          metaKey: e.metaKey,
+        });
+
+        // dispatch it to the videoPlayer
+        videoPlayer.current.dispatchEvent(keyboardEvent);
+      }
+      // Enable keyboard shortcuts when not in fullscreen
+      else if (
+        !videoPlayer.current?.isFullscreenActive &&
+        e.target === videoPlayer?.current
+      ) {
+        // Create a new keyboard event
+        const keyboardEvent = new KeyboardEvent("keydown", {
+          key: e.key,
+          code: e.code,
+          shiftKey: e.shiftKey,
+          ctrlKey: e.ctrlKey,
+          metaKey: e.metaKey,
+        });
+
+        // dispatch it to the videoPlayer
+        videoPlayer.current.dispatchEvent(keyboardEvent);
+      }
+    });
+
     if (
       localStorage.getItem("playbackQuality") !== null &&
       localStorage.getItem("playbackQuality") !== ""
