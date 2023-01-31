@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -8,6 +8,7 @@ import "@vime/core/themes/default.css";
 import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 import Page from "./components/Page";
+import { GlobalContext } from "./App";
 
 // Create database and playlist store/collection
 const db = new Dexie("IPTV");
@@ -17,33 +18,41 @@ db.version(1).stores({
 
 export default function LiveTv() {
   const { channelId } = useParams();
-  const [currentChannelData, setCurrentChannelData] = useState([]);
   const [error, setError] = useState({ code: null, message: "" });
   const [playbackQuality, setPlaybackQuality] = useState("Auto");
   const videoPlayer = useRef(null);
+  const { currentChannelData, setCurrentChannelData } =
+    useContext(GlobalContext);
 
   useLiveQuery(() => {
-    db.open().then(() => {
-      db.playlists.toArray().then((result) => {
-        const channelDataMatchesWithEmptyArrays = result.map((playlistItem) => {
-          const channelDataMatchesWithEmptyArrays = playlistItem.data.find(
-            (channelItem) => channelItem.tvg.id === channelId
+    // If currentChannelData exists in the context, then use it.
+    // Else select it from the database by channelId obtained
+    // from the url param
+    if (Object.keys(currentChannelData).length === 0) {
+      db.open().then(() => {
+        db.playlists.toArray().then((result) => {
+          const channelDataMatchesWithEmptyArrays = result.map(
+            (playlistItem) => {
+              const channelDataMatchesWithEmptyArrays = playlistItem.data.find(
+                (channelItem) => channelItem.tvg.id === channelId
+              );
+              return channelDataMatchesWithEmptyArrays
+                ? [channelDataMatchesWithEmptyArrays]
+                : [];
+            }
           );
-          return channelDataMatchesWithEmptyArrays
-            ? [channelDataMatchesWithEmptyArrays]
-            : [];
+          const channelDataMatches = channelDataMatchesWithEmptyArrays.find(
+            (array) => array.length > 0
+          );
+          channelDataMatches
+            ? setCurrentChannelData(channelDataMatches[0])
+            : setError({
+                code: 404,
+                message: "No channel found for this channel id",
+              });
         });
-        const channelDataMatches = channelDataMatchesWithEmptyArrays.find(
-          (array) => array.length > 0
-        );
-        channelDataMatches
-          ? setCurrentChannelData(channelDataMatches[0])
-          : setError({
-              code: 404,
-              message: "No channel found for this channel id",
-            });
       });
-    });
+    }
   }, [channelId]);
 
   useEffect(() => {

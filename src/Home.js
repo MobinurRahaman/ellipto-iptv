@@ -164,7 +164,7 @@ export default function Home() {
 
   const handleChannelClick = (channelObj) => {
     setCurrentChannelData(channelObj);
-    navigate(`/live-tv/${channelObj.data.tvg.id}`);
+    navigate(`/live-tv/${channelObj.tvg.id}`);
   };
 
   return (
@@ -214,12 +214,7 @@ export default function Home() {
             >
               <ButtonBase
                 style={styles.buttonBase}
-                onClick={() =>
-                  handleChannelClick({
-                    playlistName: selectedPlaylistName,
-                    data: item,
-                  })
-                }
+                onClick={() => handleChannelClick(item)}
               >
                 <Grid container>
                   <Grid item xs={12}>
