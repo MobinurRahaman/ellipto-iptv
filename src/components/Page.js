@@ -147,25 +147,32 @@ function Page(props) {
         </Button>
       </Box>
       <List>
-        {playlistNames?.map((playlistName, playlistIndex) => (
+        {playlistNames?.map((playlistNameObj, playlistIndex) => (
           <ListItem disablePadding key={playlistIndex}>
             <ListItemButton
               selected={
                 pathname === "/" &&
-                playlistName === localStorage.getItem("selectedPlaylistName")
+                playlistNameObj?.name ===
+                  localStorage.getItem("selectedPlaylistName")
               }
               onClick={() => {
                 handleDrawerToggle();
-                setSelectedPlaylistName(playlistName);
+                setSelectedPlaylistName(playlistNameObj?.name);
                 setSelectedCategoryName("All channels");
-                localStorage.setItem("selectedPlaylistName", playlistName);
+                localStorage.setItem(
+                  "selectedPlaylistName",
+                  playlistNameObj?.name
+                );
                 pathname !== "/" && navigate("/");
               }}
             >
               <ListItemIcon>
                 <PlaylistPlayIcon />
               </ListItemIcon>
-              <ListItemText primary={playlistName} />
+              <ListItemText
+                primary={playlistNameObj?.name}
+                secondary={`${playlistNameObj?.count} channels`}
+              />
             </ListItemButton>
           </ListItem>
         ))}

@@ -212,7 +212,6 @@ export default function Playlists() {
     setRenamedPlaylistName(event.target.value.trim());
   };
   const handleRenamePlaylistDialogKeyUp = (event) => {
-    console.log(event.key);
     if (event.key === "Enter" && renamedPlaylistName?.length > 0) {
       handleRenamePlaylistTrigger();
     } else if (event.key === "Escape") {
@@ -227,14 +226,14 @@ export default function Playlists() {
     setRenamePlaylistDialogOpen(false);
     await db.playlists
       .where("name")
-      .equals(playlistNames[playlistTargetIndex])
+      .equals(playlistNames[playlistTargetIndex]?.name)
       .modify({
         name: renamedPlaylistName,
       });
     // Empty renamed playlist name
     setRenamedPlaylistName("");
     // If current selected playlist name is changed, then update the state of selectedPlaylistName
-    if (playlistNames[playlistTargetIndex] === selectedPlaylistName) {
+    if (playlistNames[playlistTargetIndex]?.name === selectedPlaylistName) {
       setSelectedPlaylistName(renamedPlaylistName);
     }
   };
@@ -251,10 +250,11 @@ export default function Playlists() {
     setDeletePlaylistDialogOpen(false);
     await db.playlists
       .where("name")
-      .equals(playlistNames[playlistTargetIndex])
+      .equals(playlistNames[playlistTargetIndex]?.name)
       .delete();
-    if (selectedPlaylistName === playlistNames[playlistTargetIndex]) {
-      setSelectedPlaylistName(playlistNames[0]);
+
+    if (selectedPlaylistName === playlistNames[playlistTargetIndex]?.name) {
+      setSelectedPlaylistName(playlistNames[0]?.name);
     }
   };
 
@@ -312,15 +312,15 @@ export default function Playlists() {
   return (
     <Page title="Playlists" addPlaylistMenu={addPlaylistMenu}>
       <List>
-        {playlistNames?.map((playlistName, index) => (
+        {playlistNames?.map((playlistNameObj, index) => (
           <ListItem
             button
             key={index}
-            onClick={() => handlePlaylistItemClick(playlistName)}
+            onClick={() => handlePlaylistItemClick(playlistNameObj?.name)}
             secondaryAction={
               <IconButton
                 edge="end"
-                aria-label={`show context menu for ${playlistName} playlist`}
+                aria-label={`show context menu for ${playlistNameObj?.name} playlist`}
                 aria-controls="playlist-context-menu"
                 aria-haspopup="true"
                 onClick={(event) => handlePlaylistContextMenuOpen(event, index)}
@@ -329,7 +329,10 @@ export default function Playlists() {
               </IconButton>
             }
           >
-            <ListItemText primary={playlistName} />
+            <ListItemText
+              primary={playlistNameObj?.name}
+              secondary={`${playlistNameObj?.count} channels`}
+            />
           </ListItem>
         ))}
       </List>
@@ -407,7 +410,7 @@ export default function Playlists() {
         onKeyUp={handleRenamePlaylistDialogKeyUp}
       >
         <DialogTitle>
-          Rename {playlistNames[playlistTargetIndex]} playlist
+          Rename {playlistNames[playlistTargetIndex]?.name} playlist
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -440,7 +443,8 @@ export default function Playlists() {
         aria-describedby="delete-playlist-dialog-description"
       >
         <DialogTitle id="delete-playlist-dialog-title">
-          Are you sure to delete {playlistNames[playlistTargetIndex]} playlist?
+          Are you sure to delete {playlistNames[playlistTargetIndex]?.name}{" "}
+          playlist?
         </DialogTitle>
         <DialogActions>
           <Button onClick={handleDeletePlaylistCancel}>Cancel</Button>
