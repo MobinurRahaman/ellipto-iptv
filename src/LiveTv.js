@@ -176,8 +176,8 @@ export default function LiveTv() {
   return (
     <Page title="Ellipto IPTV">
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
-        <Box sx={{ flex: 1, height: "auto", position: "sticky", top: 54 }}>
-          {
+        <Box sx={{ width: "100%" }}>
+          <Box sx={{ flex: 1, height: "auto", position: "sticky", top: 54 }}>
             <Player
               ref={videoPlayer}
               onVmError={onPlayerError}
@@ -212,7 +212,15 @@ export default function LiveTv() {
               </Hls>
               <DefaultUi />
             </Player>
-          }
+          </Box>
+          <Box sx={{ p: 2 }}>
+            <Typography variant="h2" sx={{ fontSize: 20 }}>
+              {currentChannelData?.name}
+            </Typography>
+            <Typography variant="caption">
+              {currentChannelData?.group?.title}
+            </Typography>
+          </Box>
         </Box>
         <Box sx={{ width: { xs: "100%", md: 240 } }}></Box>
       </Box>
