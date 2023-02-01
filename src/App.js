@@ -2,6 +2,12 @@ import { useState, useEffect, useMemo, createContext } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Routes } from "react-router";
 
@@ -13,6 +19,8 @@ import PageNotFound from "./PageNotFound";
 export const GlobalContext = createContext();
 
 function App() {
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({});
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [searchBarOpen, setSearchBarOpen] = useState(false);
@@ -30,6 +38,16 @@ function App() {
       }),
     [prefersDarkMode]
   );
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
+
+  useEffect(() => {
+    if (Object.keys(alertMessage).length > 0) {
+      setAlertOpen(true);
+    }
+  }, [alertMessage]);
 
   // Get selectedPlaylistName and selectedCategoryName from localStorage if they exist or not empty on mount
   useEffect(() => {
@@ -65,6 +83,7 @@ function App() {
   return (
     <GlobalContext.Provider
       value={{
+        setAlertMessage,
         selectedPlaylistName,
         setSelectedPlaylistName,
         selectedCategoryName,
@@ -79,6 +98,28 @@ function App() {
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <Dialog
+          open={alertOpen}
+          onClose={handleAlertClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {alertMessage?.title}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {alertMessage?.message}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleAlertClose} autoFocus>
+              Ok
+            </Button>
+          </DialogActions>
+        </Dialog>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
