@@ -40,7 +40,7 @@ db.version(1).stores({
 
 export default function Home() {
   const navigate = useNavigate();
-  const [categoryNames, setCategoryNames] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const [totalDataToShow, setTotalDataToShow] = useState(0);
   const [pageNum, setPageNum] = useState(1);
   const [dataToShow, setDataToShow] = useState([]);
@@ -82,10 +82,26 @@ export default function Home() {
         .then((result) => {
           setTotalDataToShow(result[0]?.data?.length);
           if (result[0]?.data?.length > 0) {
-            setCategoryNames([
-              "All channels",
-              ...new Set(result[0]?.data?.map((item) => item.group.title)),
-            ]);
+            const categoryCount = {};
+            for (const channel of result[0].data) {
+              const category = channel?.group?.title;
+              if (categoryCount[category]) {
+                categoryCount[category]++;
+              } else {
+                categoryCount[category] = 1;
+              }
+            }
+
+            const categoryData = [
+              { name: "All channels", count: result[0]?.data?.length },
+            ];
+            for (const category in categoryCount) {
+              categoryData.push({
+                name: category,
+                count: categoryCount[category],
+              });
+            }
+            setCategoryData(categoryData);
           }
         });
     });
@@ -181,15 +197,19 @@ export default function Home() {
           overflow: "auto",
         }}
       >
-        {categoryNames?.map((categoryName, categoryIndex) => (
+        {categoryData?.map((categoryObj, categoryIndex) => (
           <Chip
-            ref={selectedCategoryName === categoryName ? onChipRefChange : null}
-            label={categoryName}
+            ref={
+              selectedCategoryName === categoryObj?.name
+                ? onChipRefChange
+                : null
+            }
+            label={`${categoryObj?.name} (${categoryObj?.count})`}
             color="primary"
             variant={
-              selectedCategoryName === categoryName ? "filled" : "outlined"
+              selectedCategoryName === categoryObj?.name ? "filled" : "outlined"
             }
-            onClick={() => setSelectedCategoryName(categoryName)}
+            onClick={() => setSelectedCategoryName(categoryObj?.name)}
             key={categoryIndex}
           />
         ))}
