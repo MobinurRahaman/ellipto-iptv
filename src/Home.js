@@ -81,10 +81,12 @@ export default function Home() {
         .toArray()
         .then((result) => {
           setTotalDataToShow(result[0]?.data?.length);
-          setCategoryNames([
-            "All channels",
-            ...new Set(result[0]?.data?.map((item) => item.group.title)),
-          ]);
+          if (result[0]?.data?.length > 0) {
+            setCategoryNames([
+              "All channels",
+              ...new Set(result[0]?.data?.map((item) => item.group.title)),
+            ]);
+          }
         });
     });
   }, [selectedPlaylistName]);
