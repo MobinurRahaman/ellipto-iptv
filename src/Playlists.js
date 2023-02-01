@@ -61,7 +61,7 @@ export default function Playlists() {
     useState(false);
 
   // __ Context
-  const { selectedPlaylistName, setSelectedPlaylistName } =
+  const { setAlertMessage, selectedPlaylistName, setSelectedPlaylistName } =
     useContext(GlobalContext);
 
   // __ Functions
@@ -106,9 +106,15 @@ export default function Playlists() {
       )
       .catch((error) => {
         !navigator.onLine
-          ? alert("No internet. Turn on internet connection")
-          : alert("Error");
-        console.log("error", error);
+          ? setAlertMessage({
+              title: "No internet",
+              message: "Turn on internet connection",
+            })
+          : setAlertMessage({
+              title: "Unknown error",
+              message: "Unknown error occurred",
+            });
+        console.log("error to add playlist ", error);
       })
       .finally(() => {
         // Empty remote playlist name and url finally
@@ -139,22 +145,32 @@ export default function Playlists() {
               console.log(`${playlistName} playlist created`);
             } else {
               // If this playlist already exists in the database
-              alert(`${playlistName} playlist already exists`);
+              setAlertMessage({
+                title: "Playlist exists",
+                message: `${playlistName} playlist already exists`,
+              });
             }
           });
       } else {
-        alert("No playlist data found");
+        setAlertMessage({
+          title: "No data",
+          message: "No playlist data found",
+        });
       }
     } catch {
       const fileExt = playlistName?.split(".").pop();
       if (!["m3u", "m3u8"].includes(fileExt)) {
-        alert(
-          "This is not an IPTV playlist. Enter url or add file with m3u or m3u8 extension"
-        );
+        setAlertMessage({
+          title: "Not a playlist",
+          message:
+            "This is not an IPTV playlist. Enter url or add file with m3u or m3u8 extension",
+        });
       } else {
-        alert(
-          "Failed to parse playlist. Make sure that this is a valid playlist"
-        );
+        setAlertMessage({
+          title: "Failed to parse",
+          message:
+            "Failed to parse playlist. Make sure that this is a valid playlist",
+        });
       }
     }
   };
@@ -180,7 +196,7 @@ export default function Playlists() {
           fileInputRef.current.value = "";
         };
         reader.onerror = function (e) {
-          alert("Failed to read file");
+          setAlertMessage({ title: "Error", message: "Failed to read file" });
         };
       }
     }
