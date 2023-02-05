@@ -62,7 +62,7 @@ function Page(props) {
       localStorage.getItem("selectedPlaylistName") === null ||
       localStorage.getItem("selectedPlaylistName") === ""
     ) {
-      if (playlistNames.length > 0) setSelectedPlaylistName(playlistNames[0]);
+      if (playlistNames.length > 0) setSelectedPlaylistName(playlistNames[0]?.name);
     }
     // eslint-disable-next-line
   }, [playlistNames]);
