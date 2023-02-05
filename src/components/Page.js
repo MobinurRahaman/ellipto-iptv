@@ -62,7 +62,8 @@ function Page(props) {
       localStorage.getItem("selectedPlaylistName") === null ||
       localStorage.getItem("selectedPlaylistName") === ""
     ) {
-      if (playlistNames.length > 0) setSelectedPlaylistName(playlistNames[0]?.name);
+      if (playlistNames.length > 0)
+        setSelectedPlaylistName(playlistNames[0]?.name);
     }
     // eslint-disable-next-line
   }, [playlistNames]);
@@ -151,9 +152,8 @@ function Page(props) {
           <ListItem disablePadding key={playlistIndex}>
             <ListItemButton
               selected={
-                pathname === "/" &&
                 playlistNameObj?.name ===
-                  localStorage.getItem("selectedPlaylistName")
+                localStorage.getItem("selectedPlaylistName")
               }
               onClick={() => {
                 handleDrawerToggle();
