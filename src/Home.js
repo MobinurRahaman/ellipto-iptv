@@ -41,9 +41,9 @@ db.version(1).stores({
 export default function Home() {
   const navigate = useNavigate();
   const [categoryData, setCategoryData] = useState([]);
-  const [totalDataToShow, setTotalDataToShow] = useState(0);
+  const [channelsToRenderCount, setChannelsToRenderCount] = useState(0);
   const [pageNum, setPageNum] = useState(1);
-  const [dataToShow, setDataToShow] = useState([]);
+  const [channelsToRender, setChannelsToRender] = useState([]);
 
   const chipStackRef = useRef(null);
   const {
@@ -58,8 +58,8 @@ export default function Home() {
 
   useEffect(() => {
     setPageNum(1);
-    setDataToShow([]);
-    setTotalDataToShow(0);
+    setChannelsToRender([]);
+    setChannelsToRenderCount(0);
     window.scrollTo(0, 0);
     chipStackRef?.current?.scrollTo({
       left: 0,
@@ -69,8 +69,8 @@ export default function Home() {
 
   useEffect(() => {
     setPageNum(1);
-    setDataToShow([]);
-    setTotalDataToShow(0);
+    setChannelsToRender([]);
+    setChannelsToRenderCount(0);
   }, [selectedCategoryName, searchTerm]);
 
   useLiveQuery(() => {
@@ -80,7 +80,7 @@ export default function Home() {
         .equals(selectedPlaylistName)
         .toArray()
         .then((result) => {
-          setTotalDataToShow(result[0]?.data?.length);
+          setChannelsToRenderCount(result[0]?.data?.length);
           if (result[0]?.data?.length > 0) {
             const categoryCount = {};
             for (const channel of result[0].data) {
@@ -124,8 +124,8 @@ export default function Home() {
                     item.group.title === selectedCategoryName &&
                     item.name.toLowerCase().includes(searchTerm.toLowerCase())
                 );
-          setTotalDataToShow(filteredData?.length);
-          setDataToShow(
+          setChannelsToRenderCount(filteredData?.length);
+          setChannelsToRender(
             filteredData?.length > 0
               ? Array.from(new Set([...filteredData?.slice(0, perPage)]))
               : []
@@ -152,11 +152,11 @@ export default function Home() {
                       item.group.title === selectedCategoryName &&
                       item.name.toLowerCase().includes(searchTerm.toLowerCase())
                   );
-            setTotalDataToShow(filteredData?.length);
-            setDataToShow(
+            setChannelsToRenderCount(filteredData?.length);
+            setChannelsToRender(
               Array.from(
                 new Set([
-                  ...dataToShow,
+                  ...channelsToRender,
                   ...filteredData?.slice(
                     Math.max(0, (pageNum - 1) * perPage),
                     pageNum * perPage
@@ -215,9 +215,9 @@ export default function Home() {
         ))}
       </Stack>
       <InfiniteScroll
-        dataLength={dataToShow?.length || 0}
+        dataLength={channelsToRender?.length || 0}
         next={fetchMoreData}
-        hasMore={pageNum < Math.ceil(totalDataToShow / perPage) || false}
+        hasMore={pageNum < Math.ceil(channelsToRenderCount / perPage) || false}
         loader={
           <Box sx={{ my: 2, display: "flex", justifyContent: "center" }}>
             <CircularProgress />
@@ -225,7 +225,7 @@ export default function Home() {
         }
       >
         <Grid container>
-          {dataToShow?.map((item, index) => (
+          {channelsToRender?.map((item, index) => (
             <Grid
               item
               key={index}
