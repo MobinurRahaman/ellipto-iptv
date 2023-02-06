@@ -8,19 +8,19 @@ db.version(1).stores({
   playlists: "++id,&name,data",
 });
 
-const useLivePlaylistNames = () => {
-  const [playlistNames, setPlaylistNames] = useState([]);
+const useLivePlaylistData = () => {
+  const [playlistData, setPlaylistData] = useState([]);
 
   useLiveQuery(() => {
     db.playlists.toArray((data) => {
-      const playlistNameWithCountArr = data.map((playlist) => ({
+      const playlistNamesWithCount = data.map((playlist) => ({
         name: playlist?.name,
         count: playlist?.data?.length,
       }));
-      setPlaylistNames(playlistNameWithCountArr);
+      setPlaylistData(playlistNamesWithCount);
     });
   }, []);
-  return playlistNames;
+  return playlistData;
 };
 
-export { useLivePlaylistNames };
+export { useLivePlaylistData };

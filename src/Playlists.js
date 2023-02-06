@@ -25,7 +25,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 // Others
 import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
-import { useLivePlaylistNames } from "./hooks/dbhooks";
+import { useLivePlaylistData } from "./hooks/dbhooks";
 import { GlobalContext } from "./App";
 
 // Create database and playlist store/collection
@@ -37,7 +37,7 @@ db.version(1).stores({
 export default function Playlists() {
   const navigate = useNavigate();
   // Get playlist names from custom hook
-  const playlistNames = useLivePlaylistNames();
+  const playlistData = useLivePlaylistData();
   // _ States
   // Add playlist menu state
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
@@ -242,14 +242,14 @@ export default function Playlists() {
     setRenamePlaylistDialogOpen(false);
     await db.playlists
       .where("name")
-      .equals(playlistNames[playlistTargetIndex]?.name)
+      .equals(playlistData[playlistTargetIndex]?.name)
       .modify({
         name: renamedPlaylistName,
       });
     // Empty renamed playlist name
     setRenamedPlaylistName("");
     // If current selected playlist name is changed, then update the state of selectedPlaylistName
-    if (playlistNames[playlistTargetIndex]?.name === selectedPlaylistName) {
+    if (playlistData[playlistTargetIndex]?.name === selectedPlaylistName) {
       setSelectedPlaylistName(renamedPlaylistName);
     }
   };
@@ -266,11 +266,11 @@ export default function Playlists() {
     setDeletePlaylistDialogOpen(false);
     await db.playlists
       .where("name")
-      .equals(playlistNames[playlistTargetIndex]?.name)
+      .equals(playlistData[playlistTargetIndex]?.name)
       .delete();
 
-    if (selectedPlaylistName === playlistNames[playlistTargetIndex]?.name) {
-      setSelectedPlaylistName(playlistNames[0]?.name);
+    if (selectedPlaylistName === playlistData[playlistTargetIndex]?.name) {
+      setSelectedPlaylistName(playlistData[0]?.name);
     }
   };
 
@@ -328,7 +328,7 @@ export default function Playlists() {
   return (
     <Page title="Playlists" addPlaylistMenu={addPlaylistMenu}>
       <List>
-        {playlistNames?.map((playlistNameObj, index) => (
+        {playlistData?.map((playlistNameObj, index) => (
           <ListItem
             button
             key={index}
@@ -426,7 +426,7 @@ export default function Playlists() {
         onKeyUp={handleRenamePlaylistDialogKeyUp}
       >
         <DialogTitle>
-          Rename {playlistNames[playlistTargetIndex]?.name} playlist
+          Rename {playlistData[playlistTargetIndex]?.name} playlist
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -459,7 +459,7 @@ export default function Playlists() {
         aria-describedby="delete-playlist-dialog-description"
       >
         <DialogTitle id="delete-playlist-dialog-title">
-          Are you sure to delete {playlistNames[playlistTargetIndex]?.name}{" "}
+          Are you sure to delete {playlistData[playlistTargetIndex]?.name}{" "}
           playlist?
         </DialogTitle>
         <DialogActions>

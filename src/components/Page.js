@@ -31,7 +31,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 // Hooks
 import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { useLivePlaylistNames } from "../hooks/dbhooks";
+import { useLivePlaylistData } from "../hooks/dbhooks";
 import { GlobalContext } from "../App";
 
 const drawerWidth = 240;
@@ -41,7 +41,7 @@ function Page(props) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   // Get playlist names from custom hook
-  const playlistNames = useLivePlaylistNames();
+  const playlistData = useLivePlaylistData();
   const { window, addPlaylistMenu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -62,11 +62,11 @@ function Page(props) {
       localStorage.getItem("selectedPlaylistName") === null ||
       localStorage.getItem("selectedPlaylistName") === ""
     ) {
-      if (playlistNames.length > 0)
-        setSelectedPlaylistName(playlistNames[0]?.name);
+      if (playlistData.length > 0)
+        setSelectedPlaylistName(playlistData[0]?.name);
     }
     // eslint-disable-next-line
-  }, [playlistNames]);
+  }, [playlistData]);
 
   useEffect(() => {
     if (searchFieldRef.current) {
@@ -148,7 +148,7 @@ function Page(props) {
         </Button>
       </Box>
       <List>
-        {playlistNames?.map((playlistNameObj, playlistIndex) => (
+        {playlistData?.map((playlistNameObj, playlistIndex) => (
           <ListItem disablePadding key={playlistIndex}>
             <ListItemButton
               selected={
