@@ -31,7 +31,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 // Hooks
 import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { useLivePlaylistData } from "../hooks/dbhooks";
 import { GlobalContext } from "../App";
 
 const drawerWidth = 240;
@@ -40,14 +39,13 @@ function Page(props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  // Get playlist names from custom hook
-  const playlistData = useLivePlaylistData();
   const { window, addPlaylistMenu } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const searchFieldRef = useRef(null);
 
   const {
+    playlistData,
     selectedPlaylistName,
     setSelectedPlaylistName,
     setSelectedCategoryName,

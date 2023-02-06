@@ -25,7 +25,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 // Others
 import parser from "iptv-playlist-parser";
 import Dexie from "dexie";
-import { useLivePlaylistData } from "./hooks/dbhooks";
 import { GlobalContext } from "./App";
 
 // Create database and playlist store/collection
@@ -36,8 +35,6 @@ db.version(1).stores({
 
 export default function Playlists() {
   const navigate = useNavigate();
-  // Get playlist names from custom hook
-  const playlistData = useLivePlaylistData();
   // _ States
   // Add playlist menu state
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
@@ -61,8 +58,12 @@ export default function Playlists() {
     useState(false);
 
   // __ Context
-  const { setAlertMessage, selectedPlaylistName, setSelectedPlaylistName } =
-    useContext(GlobalContext);
+  const {
+    setAlertMessage,
+    playlistData,
+    selectedPlaylistName,
+    setSelectedPlaylistName,
+  } = useContext(GlobalContext);
 
   // __ Functions
   // Add playlist menu functions

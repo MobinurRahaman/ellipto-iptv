@@ -15,10 +15,13 @@ import Home from "./Home";
 import Playlists from "./Playlists";
 import LiveTv from "./LiveTv";
 import PageNotFound from "./PageNotFound";
+// Get playlist data from custom hook
+import { useLivePlaylistData } from "./hooks/dbhooks";
 
 export const GlobalContext = createContext();
 
 function App() {
+  const playlistData = useLivePlaylistData();
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState({});
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
@@ -83,6 +86,7 @@ function App() {
   return (
     <GlobalContext.Provider
       value={{
+        playlistData,
         setAlertMessage,
         selectedPlaylistName,
         setSelectedPlaylistName,
