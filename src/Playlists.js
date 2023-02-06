@@ -270,7 +270,13 @@ export default function Playlists() {
       .delete();
 
     if (selectedPlaylistName === playlistData[playlistTargetIndex]?.name) {
-      setSelectedPlaylistName(playlistData[0]?.name);
+      if (playlistData.length > 1) {
+        const desiredIndex =
+          playlistTargetIndex > 1 ? playlistTargetIndex - 1 : 0;
+        setSelectedPlaylistName(playlistData[desiredIndex]?.name);
+      } else if (playlistData.length === 1) {
+        setSelectedPlaylistName("");
+      }
     }
   };
 
