@@ -24,14 +24,8 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import DeleteIcon from "@mui/icons-material/Delete";
 // Others
 import parser from "iptv-playlist-parser";
-import Dexie from "dexie";
 import { GlobalContext } from "./App";
-
-// Create database and playlist store/collection
-const db = new Dexie("IPTV");
-db.version(1).stores({
-  playlists: "++id,&name,data",
-});
+import db from "./config/dexie";
 
 export default function Playlists() {
   const navigate = useNavigate();

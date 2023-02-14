@@ -7,11 +7,11 @@ import ButtonBase from "@mui/material/ButtonBase";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Page from "./components/Page";
-import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { GlobalContext } from "./App";
+import db from "./config/dexie";
 
 const styles = {
   channelItemGrid: {
@@ -31,12 +31,6 @@ const styles = {
     maxHeight: 120,
   },
 };
-
-// Create database and playlist store/collection
-const db = new Dexie("IPTV");
-db.version(1).stores({
-  playlists: "++id,&name,data",
-});
 
 export default function Home() {
   const navigate = useNavigate();

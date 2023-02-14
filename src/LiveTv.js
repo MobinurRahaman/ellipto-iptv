@@ -5,16 +5,10 @@ import Typography from "@mui/material/Typography";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Player, Hls, DefaultUi } from "@vime/react";
 import "@vime/core/themes/default.css";
-import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
 import Page from "./components/Page";
 import { GlobalContext } from "./App";
-
-// Create database and playlist store/collection
-const db = new Dexie("IPTV");
-db.version(1).stores({
-  playlists: "++id,&name,data",
-});
+import db from "./config/dexie";
 
 export default function LiveTv() {
   const { channelId } = useParams();
