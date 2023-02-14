@@ -5,6 +5,7 @@ import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import ButtonBase from "@mui/material/ButtonBase";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Page from "./components/Page";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -41,6 +42,7 @@ export default function Home() {
 
   const chipStackRef = useRef(null);
   const {
+    playlistCount,
     selectedPlaylistName,
     selectedCategoryName,
     setSelectedCategoryName,
@@ -181,6 +183,31 @@ export default function Home() {
 
   return (
     <Page title="Ellipto IPTV">
+      {playlistCount !== null ? (
+        playlistCount === 0 ? (
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: "absolute",
+              top: (theme) => `${theme.mixins.toolbar.minHeight}px`,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              p: 1,
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="body1">No playlists found.</Typography>
+            <Typography variant="body1">
+              Click on the manage button in the playlists section of the left
+              drawer and add a playlist.
+            </Typography>
+          </Box>
+        ) : null
+      ) : null}
       <Stack
         ref={chipStackRef}
         direction="row"

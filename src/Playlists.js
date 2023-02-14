@@ -2,6 +2,7 @@ import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Page from "./components/Page";
 // MUI
+import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,6 +16,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Typography from "@mui/material/Typography";
 // Icons
 import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
 import LinkIcon from "@mui/icons-material/Link";
@@ -54,6 +56,7 @@ export default function Playlists() {
   // __ Context
   const {
     setAlertMessage,
+    playlistCount,
     playlistData,
     selectedPlaylistName,
     setSelectedPlaylistName,
@@ -328,6 +331,38 @@ export default function Playlists() {
 
   return (
     <Page title="Playlists" addPlaylistMenu={addPlaylistMenu}>
+      {playlistCount !== null ? (
+        playlistCount === 0 ? (
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: "absolute",
+              top: (theme) => `${theme.mixins.toolbar.minHeight}px`,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              p: 1,
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="body1">No playlists found.</Typography>
+            <Typography variant="body1">
+              Click on the{" "}
+              <span
+                style={{
+                  verticalAlign: "middle",
+                }}
+              >
+                <PlaylistAddTwoToneIcon />
+              </span>{" "}
+              icon in the top right corner to add a playlist.
+            </Typography>
+          </Box>
+        ) : null
+      ) : null}
       <List>
         {playlistData?.map((playlistNameObj, index) => (
           <ListItem
