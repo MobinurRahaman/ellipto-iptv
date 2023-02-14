@@ -17,4 +17,4 @@ const useLivePlaylistData = () => {
   return playlistData;
 };
 
-export { useLivePlaylistData };
+export default useLivePlaylistData;

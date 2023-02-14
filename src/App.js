@@ -16,7 +16,7 @@ import Playlists from "./Playlists";
 import LiveTv from "./LiveTv";
 import PageNotFound from "./PageNotFound";
 // Get playlist data from custom hook
-import { useLivePlaylistData } from "./hooks/dbhooks";
+import useLivePlaylistData from "./hooks/useLivePlaylistData";
 
 export const GlobalContext = createContext();
 
