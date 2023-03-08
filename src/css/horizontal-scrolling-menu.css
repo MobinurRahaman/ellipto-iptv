@@ -1,0 +1,26 @@
+.react-horizontal-scrolling-menu--arrow-left,
+.react-horizontal-scrolling-menu--arrow-right {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: 50px;
+  z-index: 9;
+}
+.react-horizontal-scrolling-menu--arrow-left {
+  left: 0;
+}
+.react-horizontal-scrolling-menu--arrow-right {
+  right: 0;
+}
+
+.react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar */
+.react-horizontal-scrolling-menu--scroll-container {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  gap: 4px;
+  padding: 1px 0;
+}

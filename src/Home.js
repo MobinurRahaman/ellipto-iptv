@@ -1,18 +1,36 @@
 import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
-import ButtonBase from "@mui/material/ButtonBase";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import ButtonBase from "@mui/material/ButtonBase";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
+import KeyboardArrowLeftSharpIcon from "@mui/icons-material/KeyboardArrowLeftSharp";
+import KeyboardArrowRightSharpIcon from "@mui/icons-material/KeyboardArrowRightSharp";
 import Page from "./components/Page";
 import { useLiveQuery } from "dexie-react-hooks";
+import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { GlobalContext } from "./App";
 import db from "./config/dexie";
+import "./css/horizontal-scrolling-menu.css";
+import usePreventBodyScroll from "./hooks/usePreventBodyScroll";
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  color: "#fff",
+  backgroundColor: theme.palette.primary.main,
+  "&:hover": {
+    backgroundColor: theme.palette.primary.main,
+  },
+  "&:active": {
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
 
 const styles = {
   channelItemGrid: {
@@ -35,7 +53,8 @@ const styles = {
 
 export default function Home() {
   const navigate = useNavigate();
-  const [categoryData, setCategoryData] = useState([]);
+  const { disableScroll, enableScroll } = usePreventBodyScroll();
+  const [categoryData, setCategoryData] = useState(null);
   const [channelsToRenderCount, setChannelsToRenderCount] = useState(0);
   const [pageNum, setPageNum] = useState(1);
   const [channelsToRender, setChannelsToRender] = useState([]);
@@ -181,6 +200,83 @@ export default function Home() {
     navigate(`/live-tv/${channelObj.tvg.id}`);
   };
 
+  const LeftArrow = () => {
+    const { isFirstItemVisible, scrollPrev } = useContext(VisibilityContext);
+
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "flex-start",
+          backgroundImage: (theme) =>
+            `linear-gradient(90deg, ${theme.palette.background.paper} , transparent)`,
+          visibility:
+            categoryData === null ||
+            categoryData?.length === 0 ||
+            isFirstItemVisible
+              ? "hidden"
+              : "visible",
+        }}
+      >
+        <StyledIconButton
+          aria-label="scroll to previous categories"
+          size="small"
+          onClick={() => scrollPrev()}
+        >
+          <KeyboardArrowLeftSharpIcon />
+        </StyledIconButton>
+      </Box>
+    );
+  };
+
+  const RightArrow = () => {
+    const { isLastItemVisible, scrollNext } = useContext(VisibilityContext);
+
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "flex-end",
+          backgroundImage: (theme) =>
+            `linear-gradient(90deg , transparent, ${theme.palette.background.paper})`,
+          visibility:
+            categoryData === null ||
+            categoryData?.length === 0 ||
+            isLastItemVisible
+              ? "hidden"
+              : "visible",
+        }}
+      >
+        <StyledIconButton
+          aria-label="scroll to next categories"
+          size="small"
+          onClick={() => scrollNext()}
+        >
+          <KeyboardArrowRightSharpIcon />
+        </StyledIconButton>
+      </Box>
+    );
+  };
+
+  function onWheel(apiObj, ev) {
+    const isThouchpad = Math.abs(ev.deltaX) !== 0 || Math.abs(ev.deltaY) < 15;
+
+    if (isThouchpad) {
+      ev.stopPropagation();
+      return;
+    }
+
+    if (ev.deltaY < 0) {
+      apiObj.scrollPrev();
+    } else if (ev.deltaY > 0) {
+      apiObj.scrollNext();
+    }
+  }
+
   return (
     <Page title="Ellipto IPTV">
       {playlistCount !== null ? (
@@ -210,30 +306,37 @@ export default function Home() {
       ) : null}
       <Stack
         ref={chipStackRef}
-        direction="row"
-        spacing={1}
         sx={{
           p: 1,
-          boxSizing: "border-box",
-          overflow: "auto",
+          display: categoryData?.length > 0 ? "block" : "none",
         }}
+        onMouseEnter={disableScroll}
+        onMouseLeave={enableScroll}
       >
-        {categoryData?.map((categoryObj, categoryIndex) => (
-          <Chip
-            ref={
-              selectedCategoryName === categoryObj?.name
-                ? onChipRefChange
-                : null
-            }
-            label={`${categoryObj?.name} (${categoryObj?.count})`}
-            color="primary"
-            variant={
-              selectedCategoryName === categoryObj?.name ? "filled" : "outlined"
-            }
-            onClick={() => setSelectedCategoryName(categoryObj?.name)}
-            key={categoryIndex}
-          />
-        ))}
+        <ScrollMenu
+          LeftArrow={LeftArrow}
+          RightArrow={RightArrow}
+          onWheel={onWheel}
+        >
+          {categoryData?.map((categoryObj, categoryIndex) => (
+            <Chip
+              ref={
+                selectedCategoryName === categoryObj?.name
+                  ? onChipRefChange
+                  : null
+              }
+              label={`${categoryObj?.name} (${categoryObj?.count})`}
+              color="primary"
+              variant={
+                selectedCategoryName === categoryObj?.name
+                  ? "filled"
+                  : "outlined"
+              }
+              onClick={() => setSelectedCategoryName(categoryObj?.name)}
+              key={categoryIndex}
+            />
+          ))}
+        </ScrollMenu>
       </Stack>
       <InfiniteScroll
         dataLength={channelsToRender?.length || 0}
