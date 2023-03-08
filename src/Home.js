@@ -54,7 +54,6 @@ const styles = {
 export default function Home() {
   const navigate = useNavigate();
   const { disableScroll, enableScroll } = usePreventBodyScroll();
-  const [categoryData, setCategoryData] = useState(null);
   const [channelsToRenderCount, setChannelsToRenderCount] = useState(0);
   const [pageNum, setPageNum] = useState(1);
   const [channelsToRender, setChannelsToRender] = useState([]);
@@ -63,6 +62,8 @@ export default function Home() {
   const {
     playlistCount,
     selectedPlaylistName,
+    categoryData,
+    setCategoryData,
     selectedCategoryName,
     setSelectedCategoryName,
     searchTerm,

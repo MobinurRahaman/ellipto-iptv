@@ -28,6 +28,7 @@ function App() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState({});
   const [selectedPlaylistName, setSelectedPlaylistName] = useState("");
+  const [categoryData, setCategoryData] = useState(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [searchBarOpen, setSearchBarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,6 +95,8 @@ function App() {
         setAlertMessage,
         selectedPlaylistName,
         setSelectedPlaylistName,
+        categoryData,
+        setCategoryData,
         selectedCategoryName,
         setSelectedCategoryName,
         searchBarOpen,
