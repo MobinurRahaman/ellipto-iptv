@@ -24,3 +24,9 @@
   gap: 4px;
   padding: 1px 0;
 }
+
+@media screen and (min-width: 1200px) {
+  .react-horizontal-scrolling-menu--arrow-left {
+    left: 240px;
+  }
+}
