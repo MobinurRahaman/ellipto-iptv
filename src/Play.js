@@ -10,7 +10,7 @@ import Page from "./components/Page";
 import { GlobalContext } from "./App";
 import db from "./config/dexie";
 
-export default function LiveTv() {
+export default function Play() {
   const { channelId } = useParams();
   const [error, setError] = useState({ code: null, message: "" });
   const [playbackQuality, setPlaybackQuality] = useState("Auto");

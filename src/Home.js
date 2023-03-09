@@ -198,7 +198,7 @@ export default function Home() {
 
   const handleChannelClick = (channelObj) => {
     setCurrentChannelData(channelObj);
-    navigate(`/live-tv/${channelObj.tvg.id}`);
+    navigate(`/play/${channelObj.tvg.id}`);
   };
 
   const LeftArrow = () => {
