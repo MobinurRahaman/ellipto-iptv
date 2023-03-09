@@ -11,7 +11,7 @@ import { GlobalContext } from "./App";
 import db from "./config/dexie";
 
 export default function Play() {
-  const { channelId } = useParams();
+  const { channelName } = useParams();
   const [error, setError] = useState({ code: null, message: "" });
   const [playbackQuality, setPlaybackQuality] = useState("Auto");
   const videoPlayer = useRef(null);
@@ -20,7 +20,7 @@ export default function Play() {
 
   useLiveQuery(() => {
     // If currentChannelData exists in the context, then use it.
-    // Else select it from the database by channelId obtained
+    // Else select it from the database by channelName obtained
     // from the url param
     if (Object.keys(currentChannelData).length === 0) {
       db.open().then(() => {
@@ -28,7 +28,8 @@ export default function Play() {
           const channelDataMatchesWithEmptyArrays = result.map(
             (playlistItem) => {
               const channelDataMatchesWithEmptyArrays = playlistItem.data.find(
-                (channelItem) => channelItem.tvg.id === channelId
+                (channelItem) =>
+                  channelItem.name === decodeURIComponent(channelName)
               );
               return channelDataMatchesWithEmptyArrays
                 ? [channelDataMatchesWithEmptyArrays]
@@ -42,12 +43,12 @@ export default function Play() {
             ? setCurrentChannelData(channelDataMatches[0])
             : setError({
                 code: 404,
-                message: "No channel found for this channel id",
+                message: "No channel data found for this channel name",
               });
         });
       });
     }
-  }, [channelId]);
+  }, [channelName]);
 
   useEffect(() => {
     document.addEventListener("keydown", (e) => {

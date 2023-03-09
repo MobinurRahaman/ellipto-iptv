@@ -135,7 +135,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/playlists" element={<Playlists />} />
-            <Route path="/play/:channelId" element={<Play />} />
+            <Route path="/play/:channelName" element={<Play />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </BrowserRouter>
