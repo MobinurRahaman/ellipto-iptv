@@ -207,13 +207,28 @@ export default function LiveTv() {
               <DefaultUi />
             </Player>
           </Box>
-          <Box sx={{ p: 2 }}>
-            <Typography variant="h2" sx={{ fontSize: 20 }}>
-              {currentChannelData?.name}
-            </Typography>
-            <Typography variant="caption">
-              {currentChannelData?.group?.title}
-            </Typography>
+          <Box
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <img
+              src={currentChannelData?.tvg?.logo}
+              alt={currentChannelData?.name}
+              style={{ width: 80, height: "auto", maxWidth: 80, maxHeight: 80 }}
+            />
+            <Box>
+              <Typography variant="h2" sx={{ fontSize: 20 }}>
+                {currentChannelData?.name}
+              </Typography>
+              <Typography variant="caption">
+                {currentChannelData?.group?.title}
+              </Typography>
+            </Box>
           </Box>
         </Box>
         <Box sx={{ width: { xs: "100%", md: 240 } }}></Box>
