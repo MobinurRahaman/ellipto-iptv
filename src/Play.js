@@ -19,10 +19,17 @@ export default function Play() {
     useContext(GlobalContext);
 
   useLiveQuery(() => {
-    // If currentChannelData exists in the context, then use it.
-    // Else select it from the database by channelName obtained
-    // from the url param
-    if (Object.keys(currentChannelData).length === 0) {
+    // If currentChannelData exists in the context
+    // and the channel name in the context is the same
+    // as it is in the url param, then use it.
+    // Else select it from the database by
+    // channelName obtained from the url param
+    if (
+      Object.keys(currentChannelData).length === 0 ||
+      decodeURIComponent(currentChannelData?.name) !== channelName
+    ) {
+      setCurrentChannelData({});
+
       db.open().then(() => {
         db.playlists.toArray().then((result) => {
           const channelDataMatchesWithEmptyArrays = result.map(
