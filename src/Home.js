@@ -42,6 +42,7 @@ const styles = {
     height: "100%",
     padding: "20px",
     overflow: "hidden",
+    aspectRatio: "1/1.1",
   },
   lazyLoadImage: {
     width: "auto",
