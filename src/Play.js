@@ -9,6 +9,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import Page from "./components/Page";
 import { GlobalContext } from "./App";
 import db from "./config/dexie";
+import "./css/play.css";
 
 export default function Play() {
   const { channelName } = useParams();
