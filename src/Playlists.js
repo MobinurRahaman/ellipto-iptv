@@ -29,6 +29,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import parser from "iptv-playlist-parser";
 import { GlobalContext } from "./App";
 import db from "./config/dexie";
+import BackdropLoader from "./components/BackdropLoader";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Zoom ref={ref} {...props} />;
@@ -39,6 +40,8 @@ export default function Playlists() {
   // _ States
   // Add playlist menu state
   const [addPlaylistMenuAnchorEl, setAddPlaylistMenuAnchorEl] = useState(null);
+  // Backdrop loader
+  const [backdropLoaderOpen, setBackdropLoaderOpen] = useState(false);
   // Add remote playlist states
   const [addRemotePlaylistDialogOpen, setAddRemotePlaylistDialogOpen] =
     useState(false);
@@ -99,6 +102,8 @@ export default function Playlists() {
   };
   const handleAddRemotePlaylistTrigger = () => {
     setAddRemotePlaylistDialogOpen(false);
+    setBackdropLoaderOpen(true);
+
     const playlistName =
       remotePlaylistName || remotePlaylistUrl?.split("/").pop();
 
@@ -108,6 +113,7 @@ export default function Playlists() {
         handleAddPlaylistToDB(playlistName, rawPlaylistData)
       )
       .catch((error) => {
+        setBackdropLoaderOpen(false);
         !navigator.onLine
           ? setAlertMessage({
               title: "No internet",
@@ -175,6 +181,8 @@ export default function Playlists() {
             "Failed to parse playlist. Make sure that this is a valid playlist",
         });
       }
+    } finally {
+      setBackdropLoaderOpen(false);
     }
   };
 
@@ -188,9 +196,11 @@ export default function Playlists() {
 
   const handleFileInputChange = (e) => {
     if (fileInputRef.current) {
+      setBackdropLoaderOpen(true);
       const file = e.target.files[0];
       if (file) {
         const fileName = file.name?.split(/(\\|\/)/g).pop();
+
         var reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = function (e) {
@@ -199,6 +209,7 @@ export default function Playlists() {
           fileInputRef.current.value = "";
         };
         reader.onerror = function (e) {
+          setBackdropLoaderOpen(false);
           setAlertMessage({ title: "Error", message: "Failed to read file" });
         };
       }
@@ -513,6 +524,7 @@ export default function Playlists() {
           </Button>
         </DialogActions>
       </Dialog>
+      <BackdropLoader open={backdropLoaderOpen} />
     </Page>
   );
 }
