@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, createContext } from "react";
+import { useState, useEffect, forwardRef, useMemo, createContext } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,6 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import Zoom from "@mui/material/Zoom";
 import Button from "@mui/material/Button";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Routes } from "react-router";
@@ -20,6 +21,10 @@ import useLivePlaylistData from "./hooks/useLivePlaylistData";
 import useLivePlaylistCount from "./hooks/useLivePlaylistCount";
 
 export const GlobalContext = createContext();
+
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Zoom ref={ref} {...props} />;
+});
 
 function App() {
   const playlistData = useLivePlaylistData();
@@ -116,6 +121,7 @@ function App() {
           aria-describedby="alert-dialog-description"
           fullWidth
           maxWidth="sm"
+          TransitionComponent={Transition}
         >
           <DialogTitle id="alert-dialog-title">
             {alertMessage?.title}

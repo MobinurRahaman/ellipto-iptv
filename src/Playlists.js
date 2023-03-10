@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, forwardRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Page from "./components/Page";
 // MUI
@@ -17,6 +17,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
+import Zoom from "@mui/material/Zoom";
 // Icons
 import PlaylistAddTwoToneIcon from "@mui/icons-material/PlaylistAddTwoTone";
 import LinkIcon from "@mui/icons-material/Link";
@@ -28,6 +29,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import parser from "iptv-playlist-parser";
 import { GlobalContext } from "./App";
 import db from "./config/dexie";
+
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Zoom ref={ref} {...props} />;
+});
 
 export default function Playlists() {
   const navigate = useNavigate();
@@ -419,6 +424,7 @@ export default function Playlists() {
       <Dialog
         open={addRemotePlaylistDialogOpen}
         onClose={handleAddRemotePlaylistCancel}
+        TransitionComponent={Transition}
       >
         <DialogTitle>Add a playlist from remote URL</DialogTitle>
         <DialogContent>
@@ -460,6 +466,7 @@ export default function Playlists() {
         open={renamePlaylistDialogOpen}
         onClose={handleRenamePlaylistDialogOpen}
         onKeyUp={handleRenamePlaylistDialogKeyUp}
+        TransitionComponent={Transition}
       >
         <DialogTitle>
           Rename {playlistData[playlistTargetIndex]?.name} playlist
@@ -493,6 +500,7 @@ export default function Playlists() {
         onClose={handleDeletePlaylistCancel}
         aria-labelledby="delete-playlist-dialog-title"
         aria-describedby="delete-playlist-dialog-description"
+        TransitionComponent={Transition}
       >
         <DialogTitle id="delete-playlist-dialog-title">
           Are you sure to delete {playlistData[playlistTargetIndex]?.name}{" "}
