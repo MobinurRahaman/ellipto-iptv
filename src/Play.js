@@ -59,21 +59,19 @@ export default function Play() {
   }, [channelName]);
 
   useEffect(() => {
-    document.addEventListener("keydown", (e) => {
-      e.preventDefault();
-      videoPlayer.current?.focus();
-    });
-
+    const currentVideoPlayer = videoPlayer.current;
     // Refocus on the videoPlayer on fullscreen change
-    videoPlayer.current.onfullscreenchange = () => {
-      videoPlayer.current.focus();
+    currentVideoPlayer.onfullscreenchange = () => {
+      currentVideoPlayer?.focus();
     };
 
-    document.addEventListener("keydown", (e) => {
+    const handleKeyDown = (e) => {
+      e.preventDefault();
+      currentVideoPlayer?.focus();
       // Enable keyboard shortcuts in fullscreen
       if (
-        videoPlayer.current.isFullscreenActive &&
-        e.target !== videoPlayer.current
+        currentVideoPlayer?.isFullscreenActive &&
+        e.target !== currentVideoPlayer
       ) {
         // Create a new keyboard event
         const keyboardEvent = new KeyboardEvent("keydown", {
@@ -85,12 +83,12 @@ export default function Play() {
         });
 
         // dispatch it to the videoPlayer
-        videoPlayer.current.dispatchEvent(keyboardEvent);
+        currentVideoPlayer?.dispatchEvent(keyboardEvent);
       }
       // Enable keyboard shortcuts when not in fullscreen
       else if (
-        !videoPlayer.current?.isFullscreenActive &&
-        e.target === videoPlayer?.current
+        !currentVideoPlayer?.isFullscreenActive &&
+        e.target === currentVideoPlayer
       ) {
         // Create a new keyboard event
         const keyboardEvent = new KeyboardEvent("keydown", {
@@ -102,15 +100,17 @@ export default function Play() {
         });
 
         // dispatch it to the videoPlayer
-        videoPlayer.current.dispatchEvent(keyboardEvent);
+        currentVideoPlayer?.dispatchEvent(keyboardEvent);
       }
-    });
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
 
     if (
       localStorage.getItem("playbackQuality") !== null &&
       localStorage.getItem("playbackQuality") !== ""
     ) {
-      videoPlayer.current?.addEventListener(
+      currentVideoPlayer?.addEventListener(
         "vmPlaybackQualitiesChange",
         (data) => {
           if (data.detail.length > 0) {
@@ -139,22 +139,28 @@ export default function Play() {
       );
     }
 
-    videoPlayer.current?.addEventListener("vmPlaybackReady", (state) => {
-      videoPlayer.current?.addEventListener(
+    currentVideoPlayer?.addEventListener("vmPlaybackReady", (state) => {
+      currentVideoPlayer?.addEventListener(
         "vmPlaybackQualityChange",
         (data) => {
           localStorage.setItem("playbackQuality", data.detail);
         }
       );
     });
+    // cleanup function to remove event listeners
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      currentVideoPlayer.onfullscreenchange = null;
+    };
   }, []);
 
   useEffect(() => {
-    videoPlayer.current?.addEventListener("vmPlaybackReady", (state) => {
+    const currentVideoPlayer = videoPlayer.current;
+    currentVideoPlayer?.addEventListener("vmPlaybackReady", (state) => {
       // If player is ready
       if (state.detail) {
-        videoPlayer.current?.canSetPlaybackQuality().then((bool) => {
-          if (bool) videoPlayer.current.playbackQuality = playbackQuality;
+        currentVideoPlayer?.canSetPlaybackQuality().then((bool) => {
+          if (bool) currentVideoPlayer.playbackQuality = playbackQuality;
         });
       }
     });
@@ -198,7 +204,7 @@ export default function Play() {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 1,
-                    zIndex: 2,
+                    zIndex: 51,
                     bgcolor: "#000",
                     color: "#fff",
                   }}
