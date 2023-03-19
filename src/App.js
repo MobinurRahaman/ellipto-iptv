@@ -113,7 +113,7 @@ function App() {
       }}
     >
       <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <CssBaseline enableColorScheme />
         <Dialog
           open={alertOpen}
           onClose={handleAlertClose}
