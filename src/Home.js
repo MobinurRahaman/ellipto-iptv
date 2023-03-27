@@ -361,6 +361,7 @@ export default function Home() {
               style={styles.channelItemGrid}
             >
               <ButtonBase
+                href={`/play/${encodeURIComponent(item.name)}`}
                 style={styles.buttonBase}
                 onClick={() => handleChannelClick(item)}
               >
