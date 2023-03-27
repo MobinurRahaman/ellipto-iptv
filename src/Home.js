@@ -42,7 +42,8 @@ const styles = {
     height: "100%",
     padding: "20px",
     overflow: "hidden",
-    aspectRatio: "1/1.1",
+    aspectRatio: "1/1.2",
+    alignItems: "stretch",
   },
   lazyLoadImage: {
     width: "auto",
@@ -366,7 +367,13 @@ export default function Home() {
                 onClick={() => handleChannelClick(item)}
               >
                 <Grid container>
-                  <Grid item xs={12}>
+                  <Grid
+                    item
+                    xs={12}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="flex-end"
+                  >
                     <LazyLoadImage
                       src={item.tvg.logo}
                       alt=""
@@ -374,7 +381,15 @@ export default function Home() {
                       style={styles.lazyLoadImage}
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid
+                    item
+                    xs={12}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="flex-end"
+                    textAlign="center"
+                    fontSize=".9rem"
+                  >
                     {item.name}
                   </Grid>
                 </Grid>
