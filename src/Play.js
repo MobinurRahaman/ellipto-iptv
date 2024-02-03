@@ -213,7 +213,7 @@ export default function Play() {
                   <Typography variant="body1"> {error.message}</Typography>
                 </Box>
               ) : null}
-              <Hls version="latest" config={hlsConfig} poster="">
+              <Hls version="1.4.14" config={hlsConfig} poster="">
                 <source
                   data-src={currentChannelData?.url}
                   type="application/x-mpegURL"
