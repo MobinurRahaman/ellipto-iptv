@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Chip from "@mui/material/Chip";
@@ -362,7 +362,8 @@ export default function Home() {
               style={styles.channelItemGrid}
             >
               <ButtonBase
-                href={`/play/${encodeURIComponent(item.name)}`}
+                component={Link}
+                to={`/play/${encodeURIComponent(item.name)}`}
                 style={styles.buttonBase}
                 onClick={() => handleChannelClick(item)}
               >
