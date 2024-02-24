@@ -168,6 +168,13 @@ function Page(props) {
                 <PlaylistPlayIcon />
               </ListItemIcon>
               <ListItemText
+                sx={{
+                  "& span": {
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  },
+                }}
                 primary={playlistNameObj?.name}
                 secondary={`${playlistNameObj?.count} channels`}
               />
@@ -294,6 +301,7 @@ function Page(props) {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
+                overflowX: "hidden",
               },
             }}
           >
@@ -306,6 +314,7 @@ function Page(props) {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
+                overflowX: "hidden",
               },
             }}
             open

@@ -398,6 +398,11 @@ export default function Playlists() {
             }
           >
             <ListItemText
+              sx={{
+                "& span": {
+                  wordBreak: "break-word", // Prevent overflow by breaking long words in playlist title
+                },
+              }}
               primary={playlistNameObj?.name}
               secondary={`${playlistNameObj?.count} channels`}
             />
