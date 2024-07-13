@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+<h1 align="center" id="title">Ellipto IPTV</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center"><img src="https://github.com/MobinurRahaman/ellipto-iptv/blob/main/public/logo192.png" alt="Ellipto IPTV icon" /></div>
+<br />
 
-## Available Scripts
+<div align="center"><img src="https://socialify.git.ci/MobinurRahaman/ellipto-iptv/image?description=1&amp;font=Inter&amp;forks=1&amp;issues=1&amp;language=1&amp;name=1&amp;owner=1&amp;pattern=Plus&amp;pulls=1&amp;stargazers=1&amp;theme=Autonguage=1&amp;name=1&amp;owner=1&amp;pattern=Plus&amp;pulls=1&amp;stargazers=1&amp;theme=Dark" alt="project-image"></div>
 
-In the project directory, you can run:
+<p id="description">A progressive web app to watch m3u or m3u8 playlists with some awesome features</p>
 
-### `yarn start`
+<div align="center">
+    <img src="https://img.shields.io/badge/React-blue" alt="shields">&nbsp;
+    <img src="https://img.shields.io/badge/Material_UI-blue" alt="shields">&nbsp;
+    <img src="https://img.shields.io/badge/Dexie.js-blue" alt="shields">
+</div>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<h2>🚀 Demo</h2>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+[https://elliptoiptv.vercel.app/](https://elliptoiptv.vercel.app/)
 
-### `yarn test`
+<h2>🖼 Screenshots:</h2>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+|                                 Home: Channel List - Light Mode                                 |                     Home: Channel List - Dark Mode                      |
+| :---------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------: |
+|               ![Home: Channel List - Light Mode  ](./screenshots/home-light.jpg)                |     ![Home: Channel List - Dark Mode ](./screenshots/home-dark.jpg)     |
+|                                      Playlists: Dark Mode                                       |                      Player: Controls - Dark Mode                       |
+|                    ![Playlists: Dark Mode](./screenshots/playlists-dark.jpg)                    | ![Player: Controls - Dark Mode](./screenshots/player-controls-dark.jpg) |
+|                            Player: Fullscreen - Controls - Dark Mode                            |                                                                         |
+| ![Player: Fullscreen - Controls - Dark Mode](./screenshots/player-fullscreen-controls-dark.jpg) |                                                                         |
 
-### `yarn build`
+<h2>🧐 Features</h2>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Here're some of the best features of Ellipto IPTV:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- M3u and M3u8 playlists support 📺
+- Add playlists from local file system 📂
+- Add playlists from remote URLs 🌐
+- Categorize channels 🔠
+- Search for channels 🔍
+- Light and Dark theme 🌓
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<h2>🛠️ Installation Steps:</h2>
 
-### `yarn eject`
+<p>1. Install dependencies</p>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+yarn install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<p>2. Run the app in the development mode</p>
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+yarn start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+<p>3. Builds the app for production to the build folder</p>
 
-## Learn More
+```
+yarn build
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+<h2>🛡️ License:</h2>
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This project is licensed under the MIT
 
-### Code Splitting
+<h2>Disclaimer</h2>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Ellipto IPTV does not provide playlists.
 
-### Analyzing the Bundle Size
+<h2>💖Like my work?</h2>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Support me<p>https://buymeacoffee.com/</p>
