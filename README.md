@@ -13,6 +13,8 @@
     <img src="https://img.shields.io/badge/Dexie.js-blue" alt="shields">
 </div>
 
+<a href="https://t.me/elliltoiptv">Join our Telegram channel for discussions</a>
+
 <h2>🚀 Demo</h2>
 
 [https://elliptoiptv.vercel.app/](https://elliptoiptv.vercel.app/)
