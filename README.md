@@ -70,4 +70,4 @@ Ellipto IPTV does not provide playlists.
 
 <h2>💖Like my work?</h2>
 
-Support me<p>https://buymeacoffee.com/</p>
+Support me <p><a href="https://www.buymeacoffee.com/mobinurrahaman"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="mobinurrahaman" /></a></p>
