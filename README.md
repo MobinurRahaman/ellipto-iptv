@@ -60,6 +60,23 @@ yarn start
 yarn build
 ```
 
+<h2>🐳 Docker Setup:</h2>
+
+<p>1. Build the Docker image</p>
+
+```
+docker build -t MobinurRahaman/ellipto-iptv .
+```
+
+<p>2. Run the container</p>
+
+```
+docker run -d --name ellipto-iptv-container -p 3000:3000 MobinurRahaman/ellipto-iptv
+```
+
+<p>3. Access the application at http://localhost:3000</p>
+
+
 <h2>🛡️ License:</h2>
 
 This project is licensed under the MIT
