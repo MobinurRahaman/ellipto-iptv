@@ -24,6 +24,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
 import SettingsIcon from "@mui/icons-material/Settings";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -122,6 +123,19 @@ function Page(props) {
               <SettingsIcon />
             </ListItemIcon>
             <ListItemText primary="Settings" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              handleDrawerToggle();
+              window.open("https://github.com/MobinurRahaman/ellipto-iptv", "_blank");
+            }}
+          >
+            <ListItemIcon>
+              <GitHubIcon />
+            </ListItemIcon>
+            <ListItemText primary="GitHub" />
           </ListItemButton>
         </ListItem>
       </List>
